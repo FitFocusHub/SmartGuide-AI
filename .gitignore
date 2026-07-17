@@ -38,4 +38,15 @@ screenshots/
 
 # Installer output
 installer_output/
-*.exe
+installer/dist/
+installer/build/
+
+# Android build
+android-app/build/
+android-app/app/build/
+android-app/.gradle/
+android-app/local.properties
+
+# Python env
+.env
+.venv/
