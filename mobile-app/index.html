@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#e94560">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="description" content="SmartGuide AI - Real-time AI Guidance for Any Software">
+    
+    <title>SmartGuide AI</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="assets/icon-192.png">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #e94560 0%, #0f3460 100%);
+            padding: 15px 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .header p {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        
+        /* Status */
+        .status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px;
+            font-size: 0.8rem;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ff4444;
+        }
+        
+        .status-dot.connected {
+            background: #00ff88;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Chat Area */
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #e94560 0%, #0f3460 100%);
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message.ai {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom-left-radius: 4px;
+        }
+        
+        .message.steps {
+            align-self: flex-start;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            font-family: monospace;
+            font-size: 0.8rem;
+        }
+        
+        .message.error {
+            align-self: flex-start;
+            background: rgba(255, 68, 68, 0.2);
+            border: 1px solid rgba(255, 68, 68, 0.5);
+        }
+        
+        /* Input Area */
+        .input-area {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            gap: 10px;
+        }
+        
+        .input-field {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .send-btn {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e94560 0%, #0f3460 100%);
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .send-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            padding: 10px 15px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        
+        .quick-actions::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .quick-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            background: rgba(233, 69, 96, 0.2);
+            color: #e94560;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .quick-btn:active {
+            background: #e94560;
+            color: #fff;
+        }
+        
+        /* Ad Banner */
+        .ad-banner {
+            margin: 10px 15px;
+            padding: 12px;
+            background: linear-gradient(135deg, rgba(233, 69, 96, 0.2) 0%, rgba(15, 52, 96, 0.2) 100%);
+            border: 1px solid rgba(233, 69, 96, 0.3);
+            border-radius: 12px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+        
+        .ad-label {
+            font-size: 0.6rem;
+            color: #e94560;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Loading */
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+            padding: 12px 16px;
+            align-self: flex-start;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #e94560;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>🤖 SmartGuide AI</h1>
+        <p>Real-time AI Guidance</p>
+    </div>
+    
+    <!-- Status -->
+    <div class="status">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Connecting...</span>
+    </div>
+    
+    <!-- Chat Area -->
+    <div class="chat-area" id="chatArea">
+        <div class="message ai">
+            Namaste! Main SmartGuide AI hoon. 
+            Kuch bhi puchin ya karne ko bolin 💬
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <button class="quick-btn" onclick="sendQuick('Notepad kholo')">📝 Notepad</button>
+        <button class="quick-btn" onclick="sendQuick('Calculator kholo')">🔢 Calculator</button>
+        <button class="quick-btn" onclick="sendQuick('Chrome kholo')">🌐 Chrome</button>
+        <button class="quick-btn" onclick="sendQuick('Excel kholo')">📊 Excel</button>
+        <button class="quick-btn" onclick="sendQuick('WhatsApp kholo')">💬 WhatsApp</button>
+    </div>
+    
+    <!-- Ad Banner -->
+    <div class="ad-banner">
+        <div class="ad-label">Advertisement</div>
+        <p>🚀 Upgrade to SmartGuide AI Pro for unlimited features!</p>
+    </div>
+    
+    <!-- Input Area -->
+    <div class="input-area">
+        <input type="text" class="input-field" id="userInput" placeholder="Type your question..." autocomplete="off">
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+    </div>
+    
+    <script>
+        const chatArea = document.getElementById('chatArea');
+        const userInput = document.getElementById('userInput');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        
+        let ws = null;
+        let isConnected = false;
+        
+        // Connect to WebSocket
+        function connectWebSocket() {
+            try {
+                // For mobile, connect to the desktop server
+                // User needs to enter the server IP
+                const serverIP = prompt("Enter server IP (e.g., 192.168.1.100):") || "127.0.0.1";
+                ws = new WebSocket(`ws://${serverIP}:8765`);
+                
+                ws.onopen = () => {
+                    isConnected = true;
+                    statusDot.classList.add('connected');
+                    statusText.textContent = 'Connected';
+                    addMessage('Connected to server! ✅', 'ai');
+                };
+                
+                ws.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    removeTypingIndicator();
+                    
+                    if (data.explanation) {
+                        addMessage(data.explanation, 'ai');
+                    }
+                    
+                    if (data.steps && data.steps.length > 0) {
+                        let txt = '';
+                        data.steps.forEach((s, i) => {
+                            txt += `${i+1}. ${s.description || s}\n`;
+                        });
+                        addMessage(txt.trim(), 'steps');
+                    }
+                    
+                    if (data.error) {
+                        addMessage(data.error, 'error');
+                    }
+                };
+                
+                ws.onclose = () => {
+                    isConnected = false;
+                    statusDot.classList.remove('connected');
+                    statusText.textContent = 'Disconnected';
+                    setTimeout(connectWebSocket, 3000);
+                };
+                
+                ws.onerror = () => {
+                    statusText.textContent = 'Connection error';
+                };
+            } catch (e) {
+                console.error('WebSocket error:', e);
+            }
+        }
+        
+        // Send message
+        function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+            
+            addMessage(text, 'user');
+            userInput.value = '';
+            
+            showTypingIndicator();
+            
+            if (ws && isConnected) {
+                ws.send(JSON.stringify({
+                    type: 'query',
+                    query: text,
+                    context: {},
+                    software: 'general'
+                }));
+            } else {
+                removeTypingIndicator();
+                addMessage('Server se connect nahi ho pa raha. Desktop server chalu hai?', 'error');
+            }
+        }
+        
+        // Quick action
+        function sendQuick(text) {
+            userInput.value = text;
+            sendMessage();
+        }
+        
+        // Add message to chat
+        function addMessage(text, type = 'ai') {
+            const div = document.createElement('div');
+            div.className = `message ${type}`;
+            div.textContent = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+        
+        // Typing indicator
+        function showTypingIndicator() {
+            const div = document.createElement('div');
+            div.className = 'typing-indicator';
+            div.id = 'typingIndicator';
+            div.innerHTML = `
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            `;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+        
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) indicator.remove();
+        }
+        
+        // Enter key to send
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+        
+        // Auto ads
+        setInterval(() => {
+            const ads = [
+                '🚀 SmartGuide AI Pro - Unlock unlimited features!',
+                '💡 Learn coding with AI guidance',
+                '🎯 Master any software with SmartGuide',
+                '🔥 Premium support available now!'
+            ];
+            const ad = ads[Math.floor(Math.random() * ads.length)];
+            document.querySelector('.ad-banner p').textContent = ad;
+        }, 300000); // 5 minutes
+        
+        // Connect on load
+        connectWebSocket();
+    </script>
+</body>
+</html>

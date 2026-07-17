@@ -1,0 +1,18 @@
+{
+  "name": "smartguide-ai",
+  "version": "1.0.0",
+  "description": "AI-powered Desktop Automation Assistant",
+  "scripts": {
+    "dev": "echo 'Load browser-extension folder in Chrome developer mode'",
+    "build": "echo 'Extension is ready to load as unpacked'",
+    "start:desktop": "cd desktop-app && python main.py"
+  },
+  "keywords": [
+    "ai",
+    "automation",
+    "browser-extension",
+    "desktop-automation"
+  ],
+  "author": "SmartGuide Team",
+  "license": "MIT"
+}

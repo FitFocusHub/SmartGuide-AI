@@ -1,0 +1,49 @@
+{
+  "form_filling": {
+    "steps": [
+      "Input field pe click karein",
+      "Text type karein",
+      "Tab press karein next field ke liye",
+      "Submit button pe click karein"
+    ],
+    "shortcuts": {
+      "next_field": "Tab",
+      "previous_field": "Shift+Tab",
+      "submit": "Enter"
+    }
+  },
+  "navigation": {
+    "new_tab": "Ctrl+T",
+    "close_tab": "Ctrl+W",
+    "next_tab": "Ctrl+Tab",
+    "previous_tab": "Ctrl+Shift+Tab",
+    "refresh": "F5",
+    "hard_refresh": "Ctrl+F5",
+    "address_bar": "Ctrl+L or F6",
+    "find_on_page": "Ctrl+F",
+    "zoom_in": "Ctrl+plus",
+    "zoom_out": "Ctrl+minus"
+  },
+  "common_actions": {
+    "download_image": {
+      "steps": [
+        "Image pe right click karein",
+        "\"Save image as\" pe click karein",
+        "Location select karein",
+        "Save pe click karein"
+      ]
+    },
+    "copy_link": {
+      "steps": [
+        "Link pe right click karein",
+        "\"Copy link address\" pe click karein"
+      ]
+    },
+    "open_incognito": {
+      "steps": [
+        "Ctrl+Shift+N press karein",
+        "Ya menu se Incognito Window select karein"
+      ]
+    }
+  }
+}

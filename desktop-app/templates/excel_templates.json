@@ -1,0 +1,62 @@
+{
+  "formulas": {
+    "sum": {
+      "name": "SUM Formula",
+      "steps": [
+        "Cell select karein jahan result chahiye",
+        "Type karein: =SUM(",
+        "Range select karein (drag karke)",
+        "Bracket close karein: )",
+        "Enter press karein"
+      ],
+      "shortcut": "=SUM(A1:A10)"
+    },
+    "vlookup": {
+      "name": "VLOOKUP Formula",
+      "steps": [
+        "Cell select karein",
+        "Type karein: =VLOOKUP(",
+        "Lookup value select karein",
+        "Comma dalein, table range select karein",
+        "Comma dalein, column number dalein",
+        "Comma dalein, FALSE dalein (exact match)",
+        "Bracket close karein, Enter press karein"
+      ],
+      "shortcut": "=VLOOKUP(A1,B1:D10,2,FALSE)"
+    },
+    "if": {
+      "name": "IF Formula",
+      "steps": [
+        "Cell select karein",
+        "Type karein: =IF(",
+        "Condition dalein",
+        "Comma dalein, True value dalein",
+        "Comma dalein, False value dalein",
+        "Bracket close karein, Enter press karein"
+      ],
+      "shortcut": "=IF(A1>10,\"Yes\",\"No\")"
+    }
+  },
+  "shortcuts": {
+    "save": "Ctrl+S",
+    "undo": "Ctrl+Z",
+    "redo": "Ctrl+Y",
+    "copy": "Ctrl+C",
+    "paste": "Ctrl+V",
+    "cut": "Ctrl+X",
+    "select_all": "Ctrl+A",
+    "find": "Ctrl+F",
+    "new_file": "Ctrl+N",
+    "bold": "Ctrl+B",
+    "italic": "Ctrl+I"
+  },
+  "menu_paths": {
+    "insert_chart": "Insert > Charts",
+    "conditional_format": "Home > Conditional Formatting",
+    "data_validation": "Data > Data Validation",
+    "sort": "Data > Sort",
+    "filter": "Data > Filter",
+    "pivot_table": "Insert > PivotTable",
+    "freeze_panes": "View > Freeze Panes"
+  }
+}
