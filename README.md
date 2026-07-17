@@ -1,14 +1,14 @@
 <p align="center">
   <img src="https://img.shields.io/badge/SmartGuide-AI-E94560?style=for-the-badge&logo=robot&logoColor=white" alt="SmartGuide AI"/>
   <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Android%20%7C%20Chrome-0F3460?style=for-the-badge" alt="Platform"/>
-  <img src="https://img.shields.io/badge/Language-Hinglish-FF6B6B?style=for-the-badge" alt="Language"/>
+  <img src="https://img.shields.io/badge/Language-English_%2B_Hindi-FF6B6B?style=for-the-badge" alt="Language"/>
 </p>
 
 <h1 align="center">SmartGuide AI</h1>
 
 <p align="center">
   <b>Real-time AI Guidance for Any Software</b><br>
-  Hinglish mein baat karo, koi bhi software seekho.
+  English + Hindi mein baat karo, koi bhi software seekho.
 </p>
 
 ---
@@ -33,12 +33,11 @@
 
 ## Features
 
-- Chat with AI about any software
-- Auto-highlight where to click
-- Control desktop apps with voice
-- YouTube, Excel, CapCut, WhatsApp support
-- 50+ desktop apps supported
-- Hinglish responses
+- Step-by-step guidance with commands - bolo kya karna hai, AI sikhayega
+- Auto-highlight where to click - agar samajh nahi aata toh green box mein highlight karke dega
+- 50+ desktop apps supported - Notepad, Excel, CapCut, WhatsApp, YouTube aur bahut kuch
+- English + Hindi responses - apni bhasha mein samjho
+- Works on Phone too - PC ki zaroorat nahi, seedha mobile pe seekho
 
 ---
 
@@ -98,7 +97,7 @@ Click the green "Download APK" button above
 ```
 1. Tap "SmartGuide AI" icon
 2. Type your question
-3. Get AI guidance in Hinglish!
+3. Get AI guidance!
 ```
 
 **Note:** Mobile app works standalone - no PC needed!
