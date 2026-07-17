@@ -105,21 +105,6 @@ Click the green "Download APK" button above
 
 ---
 
-## Commands
-
-| Command | Action |
-|---------|--------|
-| `"Notepad kholo"` | Opens Notepad |
-| `"Excel kholo"` | Opens Excel |
-| `"CapCut kholo"` | Opens CapCut |
-| `"Video chalao"` | Play/Pause YouTube |
-| `"10 min aage"` | Seek forward 10s |
-| `"10 min peeche"` | Seek backward 10s |
-| `"Volume badhao"` | Increase volume |
-| `"Mute karo"` | Mute/Unmute |
-
----
-
 ## Requirements
 
 ### Desktop
