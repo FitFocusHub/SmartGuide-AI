@@ -1,14 +1,35 @@
-# SmartGuide AI
+<p align="center">
+  <img src="https://img.shields.io/badge/SmartGuide-AI-E94560?style=for-the-badge&logo=robot&logoColor=white" alt="SmartGuide AI"/>
+  <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Android%20%7C%20Chrome-0F3460?style=for-the-badge" alt="Platform"/>
+  <img src="https://img.shields.io/badge/Language-Hinglish-FF6B6B?style=for-the-badge" alt="Language"/>
+</p>
 
-Real-time AI Guidance for Any Software. Hinglish mein baat karo, koi bhi software seekho.
+<h1 align="center">SmartGuide AI</h1>
 
-## Download
+<p align="center">
+  <b>Real-time AI Guidance for Any Software</b><br>
+  Hinglish mein baat karo, koi bhi software seekho.
+</p>
 
-| Platform | Download |
-|----------|----------|
-| Windows (.exe) | [Download SmartGuideAI_Setup.exe](https://github.com/FitFocusHub/SmartGuide-AI/releases/download/v1.0/SmartGuideAI_Setup.exe) |
-| Browser Extension | [Download browser-extension.zip](https://github.com/FitFocusHub/SmartGuide-AI/releases/download/v1.0/browser-extension.zip) |
-| Android (APK) | [Download SmartGuideAI.apk](https://github.com/FitFocusHub/SmartGuide-AI/releases/download/v1.0/SmartGuideAI.apk) |
+---
+
+## Downloads
+
+<p align="center">
+  <a href="https://github.com/FitFocusHub/SmartGuide-AI/releases/download/v1.0/SmartGuideAI_Setup.exe">
+    <img src="https://img.shields.io/badge/⬇_Download_.exe-Windows-blue?style=for-the-badge&logo=windows&logoColor=white" alt="Download .exe"/>
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://github.com/FitFocusHub/SmartGuide-AI/releases/download/v1.0/SmartGuideAI.apk">
+    <img src="https://img.shields.io/badge/⬇_Download_.APK-Android-green?style=for-the-badge&logo=android&logoColor=white" alt="Download APK"/>
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://github.com/FitFocusHub/SmartGuide-AI/releases/download/v1.0/browser-extension.zip">
+    <img src="https://img.shields.io/badge/⬇_Download_.ZIP-Chrome-orange?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Download Extension"/>
+  </a>
+</p>
+
+---
 
 ## Features
 
@@ -19,15 +40,70 @@ Real-time AI Guidance for Any Software. Hinglish mein baat karo, koi bhi softwar
 - 50+ desktop apps supported
 - Hinglish responses
 
-## Quick Start
+---
 
+## Desktop Installation
+
+### Step 1: Install Python
 ```
-1. Download & install from above
-2. Start desktop server: python main.py
-3. Load extension in Chrome
-4. Click extension icon
-5. Start asking questions!
+1. Go to python.org
+2. Download Python 3.8+
+3. Install with "Add to PATH" checked
 ```
+
+### Step 2: Install Dependencies
+```bash
+pip install websockets groq pyautogui pyperclip
+```
+
+### Step 3: Run Server
+```bash
+cd desktop-app
+python main.py
+```
+
+### Step 4: Load Extension
+```
+1. Open Chrome
+2. Go to chrome://extensions/
+3. Enable Developer mode
+4. Click "Load unpacked"
+5. Select browser-extension folder
+```
+
+### Step 5: Start Using
+```
+1. Click extension icon
+2. Type: "Notepad kholo"
+3. AI will guide you!
+```
+
+---
+
+## Mobile Installation (Android)
+
+### Step 1: Download APK
+```
+Click the green "Download APK" button above
+```
+
+### Step 2: Install
+```
+1. Open the downloaded APK
+2. Allow "Install from Unknown Sources"
+3. Tap "Install"
+```
+
+### Step 3: Open App
+```
+1. Tap "SmartGuide AI" icon
+2. Type your question
+3. Get AI guidance in Hinglish!
+```
+
+**Note:** Mobile app works standalone - no PC needed!
+
+---
 
 ## Commands
 
@@ -42,28 +118,21 @@ Real-time AI Guidance for Any Software. Hinglish mein baat karo, koi bhi softwar
 | `"Volume badhao"` | Increase volume |
 | `"Mute karo"` | Mute/Unmute |
 
-## Browser Extension Install
-
-1. Download `browser-extension.zip`
-2. Extract the zip
-3. Open Chrome → `chrome://extensions/`
-4. Enable **Developer mode**
-5. Click **Load unpacked** → Select extracted folder
-6. Done!
-
-## Desktop App Install
-
-1. Download `SmartGuideAI_Setup.exe`
-2. Double-click → Install
-3. Find "SmartGuide AI" in Start Menu
-4. Click to start server
+---
 
 ## Requirements
 
+### Desktop
 - Windows 10/11
 - Python 3.8+
 - Chrome/Edge/Brave browser
 - Internet connection
+
+### Mobile
+- Android 5.0+
+- Internet connection
+
+---
 
 ## License
 
