@@ -8,7 +8,7 @@
 
 <p align="center">
   <b>Real-time AI Guidance for Any Software</b><br>
-  English + Hindi mein baat karo, koi bhi software seekho.
+  English + Hindi support. Learn any software with AI.
 </p>
 
 ---
@@ -33,11 +33,11 @@
 
 ## Features
 
-- Step-by-step guidance with commands - bolo kya karna hai, AI sikhayega
-- Auto-highlight where to click - agar samajh nahi aata toh green box mein highlight karke dega
-- 50+ desktop apps supported - Notepad, Excel, CapCut, WhatsApp, YouTube aur bahut kuch
-- English + Hindi responses - apni bhasha mein samjho
-- Works on Phone too - PC ki zaroorat nahi, seedha mobile pe seekho
+- Step-by-step guidance with commands - tell AI what you want to do, it will teach you
+- Auto-highlight where to click - if you don't understand, AI highlights the exact spot with a green box
+- 50+ desktop apps supported - Notepad, Excel, CapCut, WhatsApp, YouTube and more
+- English + Hindi responses - learn in your preferred language
+- Works on Phone too - no PC needed, learn directly on mobile
 
 ---
 
@@ -73,7 +73,7 @@ python main.py
 ### Step 5: Start Using
 ```
 1. Click extension icon
-2. Type: "Notepad kholo"
+2. Type what you want to learn
 3. AI will guide you!
 ```
 
@@ -99,8 +99,6 @@ Click the green "Download APK" button above
 2. Type your question
 3. Get AI guidance!
 ```
-
-**Note:** Mobile app works standalone - no PC needed!
 
 ---
 
