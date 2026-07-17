@@ -13,6 +13,18 @@
 
 ---
 
+## What is SmartGuide AI?
+
+SmartGuide AI is your personal AI assistant that helps you learn and use any software. Just ask a question in English or Hindi, and it will guide you step-by-step with highlighted instructions.
+
+**How it works:**
+1. You ask: "How to make a table in Excel?"
+2. AI responds with step-by-step instructions
+3. If you still don't understand, AI highlights the exact spot on your screen with a green box
+4. You follow along and learn!
+
+---
+
 ## Downloads
 
 <p align="center">
@@ -33,72 +45,126 @@
 
 ## Features
 
-- Step-by-step guidance with commands - tell AI what you want to do, it will teach you
-- Auto-highlight where to click - if you don't understand, AI highlights the exact spot with a green box
-- 50+ desktop apps supported - Notepad, Excel, CapCut, WhatsApp, YouTube and more
-- English + Hindi responses - learn in your preferred language
-- Works on Phone too - no PC needed, learn directly on mobile
+- **Step-by-step guidance** - tell AI what you want to do, it will teach you
+- **Auto-highlight where to click** - if you don't understand, AI highlights the exact spot with a green box
+- **50+ desktop apps supported** - Notepad, Excel, CapCut, WhatsApp, YouTube and more
+- **English + Hindi responses** - learn in your preferred language
+- **Works on Phone too** - no PC needed, learn directly on mobile
 
 ---
 
-## Desktop Installation
+## Desktop Installation (Windows)
 
-### Step 1: Install Python
-```
-1. Go to python.org
-2. Download Python 3.8+
-3. Install with "Add to PATH" checked
-```
+### Step 1: Download the Installer
+1. Click the blue **"Download .exe"** button above
+2. Save the file `SmartGuideAI_Setup.exe` to your computer
+3. If Windows shows a warning, click **"More info"** then **"Run anyway"**
 
-### Step 2: Install Dependencies
-```bash
-pip install websockets groq pyautogui pyperclip
-```
+### Step 2: Install the App
+1. Double-click `SmartGuideAI_Setup.exe`
+2. Click **"Install"** to begin installation
+3. Wait for installation to complete
+4. Click **"Finish"** to close the installer
 
-### Step 3: Run Server
-```bash
-cd desktop-app
-python main.py
-```
+### Step 3: Launch SmartGuide AI
+1. Find **"SmartGuide AI"** in your Start Menu
+2. Click to open it
+3. A floating chat box will appear on your screen
 
-### Step 4: Load Extension
-```
-1. Open Chrome
-2. Go to chrome://extensions/
-3. Enable Developer mode
-4. Click "Load unpacked"
-5. Select browser-extension folder
-```
+### Step 4: Start Using
+1. Open any software you want to learn (Excel, Word, VS Code, etc.)
+2. The chat box stays on top of all windows
+3. Type your question in the chat box
+4. AI will guide you with step-by-step instructions
 
-### Step 5: Start Using
-```
-1. Click extension icon
-2. Type what you want to learn
-3. AI will guide you!
-```
+**Example questions:**
+- "How to create a formula in Excel?"
+- "How to format text in Word?"
+- "How to debug code in VS Code?"
+- "How to edit video in CapCut?"
+
+---
+
+## Browser Extension Installation (Chrome)
+
+### Step 1: Download the Extension
+1. Click the orange **"Download .ZIP"** button above
+2. Save the file `browser-extension.zip` to your computer
+3. Extract the zip file (right-click > Extract All)
+
+### Step 2: Load in Chrome
+1. Open Chrome browser
+2. Type `chrome://extensions/` in the address bar and press Enter
+3. Turn on **"Developer mode"** (top right toggle)
+4. Click **"Load unpacked"** button
+5. Select the extracted `browser-extension` folder
+6. The extension is now installed!
+
+### Step 3: Start Using
+1. Click the **SmartGuide AI** icon in Chrome toolbar
+2. A chat box will appear on any webpage
+3. Type your question about the current page
+4. AI will guide you with highlighted instructions
+
+**Works on:**
+- YouTube (video controls)
+- Social media (Facebook, Instagram)
+- Shopping sites (Amazon, Flipkart)
+- Any website
 
 ---
 
 ## Mobile Installation (Android)
 
-### Step 1: Download APK
-```
-Click the green "Download APK" button above
-```
+### Step 1: Download the APK
+1. Click the green **"Download .APK"** button above
+2. The file `SmartGuideAI.apk` will download
 
-### Step 2: Install
-```
-1. Open the downloaded APK
-2. Allow "Install from Unknown Sources"
-3. Tap "Install"
-```
+### Step 2: Install the App
+1. Open the downloaded APK file
+2. If prompted, enable **"Install from Unknown Sources"**
+3. Tap **"Install"** to begin installation
+4. Wait for installation to complete
+5. Tap **"Done"** or **"Open"**
 
-### Step 3: Open App
-```
-1. Tap "SmartGuide AI" icon
-2. Type your question
-3. Get AI guidance!
-```
+### Step 3: Start Using
+1. Open **SmartGuide AI** from your app drawer
+2. Type your question in the chat box
+3. AI will guide you with step-by-step instructions
+
+**No PC needed!** The app works standalone on your phone.
+
+---
+
+## How AI Highlights Work
+
+When you ask a question, the AI:
+1. Analyzes what you're asking
+2. Finds the exact location on your screen
+3. Draws a **green box** around the element
+4. Shows you exactly where to click or what to do
+
+This makes it easy to follow along, even if you're a beginner.
+
+---
+
+## Supported Software
+
+### Desktop Apps
+- **Office:** Excel, Word, PowerPoint, Outlook
+- **Creative:** CapCut, Canva, Figma, Photoshop, Premiere Pro
+- **Development:** VS Code, PyCharm, IntelliJ, Sublime Text
+- **Communication:** WhatsApp, Telegram, Discord, Zoom, Teams
+- **Browsers:** Chrome, Firefox, Edge, Brave
+- **Media:** VLC, Spotify, OBS
+- **Gaming:** Steam, Epic Games
+- **Utilities:** Notepad, Calculator, Paint, 7-Zip, WinRAR
+
+### Websites
+- YouTube (play, pause, seek, volume)
+- Social media platforms
+- Online shopping sites
+- Any website
 
 ---
 
@@ -106,13 +172,30 @@ Click the green "Download APK" button above
 
 ### Desktop
 - Windows 10/11
-- Python 3.8+
-- Chrome/Edge/Brave browser
+- Chrome/Edge/Brave browser (for extension)
 - Internet connection
 
 ### Mobile
-- Android 5.0+
+- Android 5.0 or higher
 - Internet connection
+
+---
+
+## Troubleshooting
+
+### "App is blocked" warning
+- Click **"More info"** then **"Run anyway"**
+- This is normal for new apps
+
+### Extension not loading
+- Make sure Developer mode is ON
+- Try extracting the zip file again
+- Restart Chrome and try again
+
+### AI not responding
+- Check your internet connection
+- Wait a few seconds and try again
+- If problem persists, restart the app
 
 ---
 
