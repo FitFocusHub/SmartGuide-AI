@@ -39,21 +39,27 @@ SmartGuide AI is a Chrome extension that helps you navigate and use any website.
 
 - **Step-by-step guidance** - tell AI what you want to do, it will teach you
 - **Auto-highlight where to click** - AI highlights the exact spot with a green box
-- **50+ desktop apps supported** - YouTube, Facebook, Amazon, Google and more
+- **Works on any website** - YouTube, Facebook, Amazon, Google and more
 - **English + Hindi responses** - learn in your preferred language
 - **Floating chat icon** - purple bubble with pulse animation, always accessible
-- **Connection status indicator** - green dot shows when server is connected
+- **No server needed** - runs directly in your browser with your own API key
 
 ---
 
 ## Installation
 
-### Step 1: Download the Extension
+### Step 1: Get a Free Groq API Key
+1. Go to [console.groq.com](https://console.groq.com)
+2. Sign up for free (no credit card needed)
+3. Go to **API Keys** section
+4. Click **Create API Key** and copy it
+
+### Step 2: Download the Extension
 1. Click the orange **Download** button above
 2. Save the file `browser-extension.zip` to your computer
 3. Extract the zip file (right-click > Extract All)
 
-### Step 2: Load in Chrome
+### Step 3: Load in Chrome
 1. Open Chrome browser
 2. Type `chrome://extensions/` in the address bar and press Enter
 3. Turn on **"Developer mode"** (top right toggle)
@@ -61,9 +67,15 @@ SmartGuide AI is a Chrome extension that helps you navigate and use any website.
 5. Select the extracted `browser-extension` folder
 6. The extension is now installed!
 
-### Step 3: Start Using
+### Step 4: Add Your API Key
 1. Click the **SmartGuide AI** icon in Chrome toolbar
-2. A chat box will appear on any webpage
+2. Paste your Groq API key in the input field
+3. Click **Save API Key**
+4. Status should show **Ready** (green dot)
+
+### Step 5: Start Using
+1. Go to any website (YouTube, Facebook, Amazon, etc.)
+2. Click the purple chat bubble in the bottom-right corner
 3. Type your question about the current page
 4. AI will guide you with highlighted instructions
 
@@ -90,6 +102,7 @@ This makes it easy to follow along, even if you're a beginner.
 ## Requirements
 
 - Chrome/Edge/Brave browser
+- Free Groq API key (get at console.groq.com)
 - Internet connection
 
 ---
@@ -101,10 +114,15 @@ This makes it easy to follow along, even if you're a beginner.
 - Try extracting the zip file again
 - Restart Chrome and try again
 
+### "No API Key" error
+- Click the extension icon
+- Enter your Groq API key
+- Click Save API Key
+
 ### AI not responding
 - Check your internet connection
+- Make sure your API key is valid
 - Wait a few seconds and try again
-- If problem persists, restart the extension
 
 ---
 

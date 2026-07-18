@@ -1,125 +1,108 @@
-const WS_URL = "ws://127.0.0.1:8765";
-const RECONNECT_DELAY = 3000;
-const MAX_RECONNECT_ATTEMPTS = 10;
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+const GROQ_MODEL = "llama-3.3-70b-versatile";
 
-let ws = null;
-let reconnectAttempts = 0;
-let messageQueue = [];
-let isConnected = false;
+const SYSTEM_PROMPT = `You are SmartGuide AI, a helpful website navigation assistant. You help users understand and use any website.
 
-function connect() {
-    if (ws && ws.readyState === WebSocket.OPEN) return;
+IMPORTANT RULES:
+1. ALWAYS respond in the SAME LANGUAGE the user writes in
+2. If user writes in Hindi (Hinglish/Devanagari), respond in Hindi
+3. If user writes in English, respond in English
+4. Keep responses SHORT and STEP-BY-STEP (max 5 steps)
+5. For YouTube: explain play, pause, subscribe, like, comment, search, volume, fullscreen
+6. For social media: explain posting, liking, commenting, sharing, following
+7. For shopping: explain search, filter, add to cart, buy, reviews
+8. For Google: explain search, filters, images, advanced search
 
-    ws = new WebSocket(WS_URL);
+ELEMENT FORMAT:
+When telling where to click, use this format:
+CLICK: "[element text]" at (x, y)
 
-    ws.onopen = () => {
-        console.log("[SmartGuide] Connected to desktop app");
-        isConnected = true;
-        reconnectAttempts = 0;
-        chrome.storage.local.set({ connectionStatus: "connected" });
+RESPONSE FORMAT:
+Always return JSON with these fields:
+- explanation: brief text answer (in user's language)
+- steps: array of step objects with "description" field
+- highlight: array of elements to highlight with {x, y, w, h, text} (only if needed)
 
-        while (messageQueue.length > 0) {
-            const msg = messageQueue.shift();
-            ws.send(JSON.stringify(msg));
-        }
-    };
+Example:
+{
+  "explanation": "YouTube pe subscribe karne ke liye...",
+  "steps": [{"description": "Channel page pe jao"}, {"description": "Subscribe button dabao"}],
+  "highlight": [{"x": 400, "y": 300, "w": 120, "h": 40, "text": "Subscribe"}]
+}`;
 
-    ws.onmessage = (event) => {
-        try {
-            const data = JSON.parse(event.data);
-            handleMessage(data);
-        } catch (e) {
-            console.error("[SmartGuide] Parse error:", e);
-        }
-    };
+async function callGroqAPI(messages, apiKey) {
+    const response = await fetch(GROQ_API_URL, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${apiKey}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            model: GROQ_MODEL,
+            messages: messages,
+            temperature: 0.7,
+            max_tokens: 1024
+        })
+    });
 
-    ws.onclose = () => {
-        console.log("[SmartGuide] Disconnected from desktop app");
-        isConnected = false;
-        chrome.storage.local.set({ connectionStatus: "disconnected" });
-        attemptReconnect();
-    };
+    if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error?.message || `API error ${response.status}`);
+    }
 
-    ws.onerror = (error) => {
-        console.error("[SmartGuide] WebSocket error:", error);
-    };
+    const data = await response.json();
+    return data.choices[0].message.content;
 }
 
-function attemptReconnect() {
-    if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-        console.log("[SmartGuide] Max reconnection attempts reached");
-        return;
-    }
-    reconnectAttempts++;
-    setTimeout(connect, RECONNECT_DELAY);
-}
+function parseAIResponse(text) {
+    try {
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) return JSON.parse(jsonMatch[0]);
+    } catch (e) {}
 
-function sendMessage(message) {
-    if (isConnected && ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify(message));
-    } else {
-        messageQueue.push(message);
-        connect();
-    }
-}
-
-function handleMessage(data) {
-    switch (data.type) {
-        case "response":
-            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                if (tabs[0]) {
-                    chrome.tabs.sendMessage(tabs[0].id, {
-                        type: "ai_response",
-                        data: data
-                    });
-                }
-            });
-            break;
-        case "pong":
-            break;
-        case "execution_success":
-            chrome.storage.local.set({ lastExecution: { success: true, action: data.action } });
-            break;
-        case "execution_error":
-            chrome.storage.local.set({ lastExecution: { success: false, error: data.message } });
-            break;
-    }
+    return {
+        explanation: text,
+        steps: [],
+        highlight: []
+    };
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === "send_query") {
-        sendMessage({
-            type: "query",
-            query: message.query,
-            context: message.context,
-            software: message.software || "general",
-            timestamp: Date.now()
-        });
-        sendResponse({ status: "sent" });
-    } else if (message.type === "get_connection_status") {
-        sendResponse({ connected: isConnected });
-    } else if (message.type === "execute_action") {
-        sendMessage({
-            type: "execute",
-            action: message.action,
-            coordinates: message.coordinates,
-            text: message.text,
-            key: message.key,
-            keys: message.keys
-        });
-        sendResponse({ status: "executing" });
-    }
-    return true;
-});
-
-chrome.storage.local.get(["enabled"], (result) => {
-    if (result.enabled !== false) {
-        connect();
+    if (message.type === "query") {
+        handleQuery(message, sendResponse);
+        return true;
     }
 });
 
-setInterval(() => {
-    if (isConnected) {
-        sendMessage({ type: "ping" });
+async function handleQuery(message, sendResponse) {
+    try {
+        const result = await chrome.storage.local.get(["apiKey"]);
+        const apiKey = result.apiKey;
+
+        if (!apiKey) {
+            sendResponse({
+                error: "API key not set! Click the extension icon and add your Groq API key."
+            });
+            return;
+        }
+
+        const contextStr = message.context
+            ? `\nPage: ${message.context.title}\nURL: ${message.context.url}\nElements: ${JSON.stringify(message.context.elements?.slice(0, 15) || [])}`
+            : "";
+
+        const messages = [
+            { role: "system", content: SYSTEM_PROMPT },
+            { role: "user", content: `${message.query}${contextStr}` }
+        ];
+
+        const reply = await callGroqAPI(messages, apiKey);
+        const parsed = parseAIResponse(reply);
+
+        sendResponse(parsed);
+    } catch (err) {
+        console.error("[SmartGuide] API error:", err);
+        sendResponse({
+            error: `Error: ${err.message}`
+        });
     }
-}, 30000);
+}

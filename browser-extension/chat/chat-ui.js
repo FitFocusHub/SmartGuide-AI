@@ -1,70 +1,31 @@
-console.log("[SmartGuide] v4 loaded - with ads");
+console.log("[SmartGuide] v2.0 loaded - direct API, no server");
 
 window.smartGuideChat = {
     container: null,
     messagesContainer: null,
     inputField: null,
     isOpen: false,
-    ws: null,
-    isConnected: false,
-    pendingActions: null,
     adTimer: null,
-    adInterval: 30 * 60 * 1000, // 30 minutes
+    adInterval: 30 * 60 * 1000,
 
     init() {
         if (this.container) return;
         this.createUI();
         this.bindEvents();
-        this.connectWebSocket();
+        this.checkApiKey();
         this.startAdTimer();
     },
 
-    connectWebSocket() {
+    async checkApiKey() {
         try {
-            this.ws = new WebSocket("ws://127.0.0.1:8765");
-            this.ws.onopen = () => {
-                this.isConnected = true;
-                this.showStatus("Connected", "#00ff88");
-                console.log("[SmartGuide] WebSocket connected");
-            };
-            this.ws.onmessage = (event) => {
-                try {
-                    const data = JSON.parse(event.data);
-                    this.removeTypingIndicator();
-                    
-                    console.log("[SmartGuide] Received:", JSON.stringify(data).substring(0, 200));
-                    
-                    if (data.error) { this.addMessage(data.error, "error"); return; }
-                    
-                    if (data.explanation) this.addMessage(data.explanation, "ai");
-                    
-                    if (data.steps && data.steps.length > 0) {
-                        let txt = "";
-                        data.steps.forEach((s, i) => { txt += `${i+1}. ${s.description || s}\n`; });
-                        this.addMessage(txt.trim(), "steps");
-                    }
-                    
-                    if (data.highlight && data.highlight.length > 0) {
-                        this.showHighlights(data.highlight);
-                    }
-                    
-                    if (data.execute && data.execute.length > 0) {
-                        console.log("[SmartGuide] Execute actions:", data.execute.length);
-                        this.askPermission(data.execute);
-                    }
-                } catch (e) {
-                    console.error("[SmartGuide] Parse error:", e);
-                    this.removeTypingIndicator();
-                }
-            };
-            this.ws.onclose = () => {
-                this.isConnected = false;
-                this.showStatus("Disconnected", "#ff4444");
-                setTimeout(() => this.connectWebSocket(), 3000);
-            };
-            this.ws.onerror = () => this.showStatus("Error", "#ff4444");
+            const result = await chrome.storage.local.get(["apiKey"]);
+            if (result.apiKey) {
+                this.showStatus("Ready", "#00ff88");
+            } else {
+                this.showStatus("No API Key", "#ff4444");
+            }
         } catch (e) {
-            setTimeout(() => this.connectWebSocket(), 3000);
+            this.showStatus("Ready", "#00ff88");
         }
     },
 
@@ -75,24 +36,20 @@ window.smartGuideChat = {
         if (dot) { dot.className = color === "#00ff88" ? "sg-dot" : "sg-dot disconnected"; }
     },
 
-    // Better element detection
     getPageElements() {
         const els = [];
         const seen = new Set();
         
-        // Find ALL visible interactive elements
         const selectors = 'button, a, [role="button"], input[type="text"], input[type="email"], input[type="search"], textarea, [onclick], [tabindex]';
         
         document.querySelectorAll(selectors).forEach((el) => {
             const r = el.getBoundingClientRect();
             const style = window.getComputedStyle(el);
             
-            // Must be visible and have size
             if (r.width < 5 || r.height < 5 || r.width > 800) return;
             if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') return;
             if (r.bottom < 0 || r.top > window.innerHeight) return;
             
-            // Get text content
             let text = '';
             if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                 text = el.placeholder || el.value || el.name || el.id || '';
@@ -103,7 +60,6 @@ window.smartGuideChat = {
             
             if (!text) return;
             
-            // Unique key to avoid duplicates
             const key = `${Math.round(r.x)}-${Math.round(r.y)}-${text.substring(0,20)}`;
             if (seen.has(key)) return;
             seen.add(key);
@@ -181,6 +137,7 @@ window.smartGuideChat = {
         document.getElementById("sg-window").style.display = "flex";
         this.isOpen = true;
         this.inputField.focus();
+        this.checkApiKey();
     },
     close() {
         document.getElementById("sg-bubble").style.display = "flex";
@@ -199,18 +156,42 @@ window.smartGuideChat = {
         const ctx = this.getPageElements();
         console.log("[SmartGuide] Elements found:", ctx.elements.length);
         
-        if (this.isConnected && this.ws?.readyState === WebSocket.OPEN) {
-            this.ws.send(JSON.stringify({
-                type: "query",
-                query: text,
-                context: ctx,
-                software: "general",
-                timestamp: Date.now()
-            }));
-        } else {
+        chrome.runtime.sendMessage({
+            type: "query",
+            query: text,
+            context: ctx
+        }, (response) => {
             this.removeTypingIndicator();
-            this.addMessage("Server disconnected!", "error");
-        }
+            
+            if (chrome.runtime.lastError) {
+                this.addMessage("Error: " + chrome.runtime.lastError.message, "error");
+                return;
+            }
+            
+            if (!response) {
+                this.addMessage("No response from background.", "error");
+                return;
+            }
+            
+            if (response.error) {
+                this.addMessage(response.error, "error");
+                return;
+            }
+            
+            if (response.explanation) {
+                this.addMessage(response.explanation, "ai");
+            }
+            
+            if (response.steps && response.steps.length > 0) {
+                let txt = "";
+                response.steps.forEach((s, i) => { txt += `${i+1}. ${s.description || s}\n`; });
+                this.addMessage(txt.trim(), "steps");
+            }
+            
+            if (response.highlight && response.highlight.length > 0) {
+                this.showHighlights(response.highlight);
+            }
+        });
     },
 
     addMessage(text, type = "ai") {
@@ -238,13 +219,9 @@ window.smartGuideChat = {
         this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
     },
 
-    // Ad System - 30 min mein ek ad
     startAdTimer() {
-        // Pehla ad 2 minute baad
         setTimeout(() => this.showAd(), 2 * 60 * 1000);
-        // Phir har 30 min
         this.adTimer = setInterval(() => this.showAd(), this.adInterval);
-        console.log("[SmartGuide] Ad timer started - first ad in 2 min");
     },
 
     showAd() {
@@ -277,12 +254,9 @@ window.smartGuideChat = {
         this.messagesContainer.appendChild(adDiv);
         this.scrollToBottom();
         
-        // Auto remove after 30 seconds
         setTimeout(() => {
             if (adDiv.parentElement) adDiv.remove();
         }, 30000);
-        
-        console.log("[SmartGuide] Ad displayed");
     },
 
     showHighlights(elements) {
@@ -314,71 +288,6 @@ window.smartGuideChat = {
             document.body.appendChild(hl);
             setTimeout(() => hl.remove(), 7000);
         });
-    },
-
-    askPermission(actions) {
-        let text = "Kya ye actions karu?\n";
-        actions.forEach((a, i) => {
-            text += `${i+1}. ${a.description || a.action}\n`;
-        });
-        
-        this.addMessage(text, "permission");
-        this.pendingActions = actions;
-        
-        const btnDiv = document.createElement("div");
-        btnDiv.className = "sg-permission-btns";
-        btnDiv.innerHTML = `
-            <button class="sg-btn sg-btn-yes" id="sg-yes">Han, karo</button>
-            <button class="sg-btn sg-btn-no" id="sg-no">Nahi</button>
-        `;
-        this.messagesContainer.appendChild(btnDiv);
-        
-        document.getElementById("sg-yes").onclick = () => this.handlePermission(true);
-        document.getElementById("sg-no").onclick = () => this.handlePermission(false);
-        
-        this.scrollToBottom();
-    },
-
-    handlePermission(confirmed) {
-        document.querySelectorAll('.sg-permission-btns').forEach(e => e.remove());
-        
-        if (confirmed && this.pendingActions) {
-            this.addMessage("Executing...", "ai");
-            this.executeSequentially(this.pendingActions, 0);
-        } else {
-            this.addMessage("Thik hai.", "ai");
-        }
-        this.pendingActions = null;
-    },
-
-    async executeSequentially(actions, index) {
-        if (index >= actions.length) {
-            this.addMessage("Done!", "ai");
-            return;
-        }
-        
-        const action = actions[index];
-        this.addMessage(`${index + 1}. ${action.description || action.action}...`, "steps");
-        
-        console.log("[SmartGuide] Executing action:", JSON.stringify(action));
-        console.log("[SmartGuide] WS state:", this.ws?.readyState, "OPEN:", WebSocket.OPEN);
-        
-        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-            const msg = JSON.stringify({ type: "execute", ...action });
-            console.log("[SmartGuide] Sending:", msg);
-            this.ws.send(msg);
-        } else {
-            console.error("[SmartGuide] WS not open! State:", this.ws?.readyState);
-            this.addMessage("Server disconnected! Reconnecting...", "error");
-            this.connectWebSocket();
-            return;
-        }
-        
-        // Wait for action to complete
-        const delay = action.action === "wait" ? (action.duration || 1) * 1000 : 1000;
-        await new Promise(r => setTimeout(r, delay));
-        
-        this.executeSequentially(actions, index + 1);
     }
 };
 

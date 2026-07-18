@@ -2,43 +2,37 @@
 
 ## Installation Steps
 
-### Chrome / Edge / Brave
+### Step 1: Get Free Groq API Key
+1. Go to [console.groq.com](https://console.groq.com)
+2. Sign up for free (no credit card needed)
+3. Go to **API Keys** section
+4. Click **Create API Key** and copy it
 
+### Step 2: Install Extension
+
+#### Chrome / Edge / Brave
 1. Open your browser
 2. Go to: `chrome://extensions/`
 3. Enable **Developer mode** (top right toggle)
 4. Click **Load unpacked**
 5. Select this **browser-extension** folder
-6. Done! Click the extension icon to start
+6. Done!
 
-### Firefox
+### Step 3: Add API Key
+1. Click the SmartGuide AI icon in toolbar
+2. Paste your Groq API key
+3. Click **Save API Key**
+4. Status shows **Ready** (green dot)
 
-1. Open Firefox
-2. Go to: `about:debugging#/runtime/this-firefox`
-3. Click **Load Temporary Add-on**
-4. Select any file in this folder
+### Step 4: Start Using
+1. Go to any website
+2. Click the purple chat bubble (bottom-right)
+3. Ask your question
+4. AI guides you step-by-step
 
-## Requirements
+## No Server Needed!
 
-- Desktop server must be running (`desktop-app/main.py`)
-- Python 3.8+ installed
-- Groq API key (free at console.groq.com)
-
-## Quick Start
-
-```
-1. Start desktop server: python main.py
-2. Extension will auto-connect
-3. Click extension icon
-4. Start asking questions!
-```
-
-## Commands
-
-- `"Notepad kholo"` - Opens Notepad
-- `"Excel kholo"` - Opens Excel
-- `"Video chalao"` - Play/Pause YouTube
-- `"Hi"` - Get greeting
+The extension runs directly in your browser. Just your own Groq API key is required.
 
 ## Support
 
