@@ -5,14 +5,15 @@ echo.
 echo Copyright (c) 2026 FitFocusHub. All Rights Reserved.
 echo.
 
-if not exist "build" mkdir build
-if not exist "build\browser-extension" mkdir build\browser-extension
-
-echo Copying files...
-xcopy /E /I /Y "browser-extension\*" "build\browser-extension\"
+echo Installing dependencies...
+call npm install
 
 echo.
-echo Build complete! Output: build\browser-extension\
+echo Building and obfuscating...
+call npm run build
+
+echo.
+echo Build complete! Output: dist\browser-extension\
 echo.
 echo NOTICE: This software is proprietary. Do not redistribute.
 echo.

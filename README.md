@@ -43,16 +43,16 @@ SmartGuide AI is a Chrome extension that helps you navigate and use any website.
 - **English + Hindi responses** - learn in your preferred language
 - **Floating chat icon** - purple bubble with pulse animation, always accessible
 - **No server needed** - runs directly in your browser with your own API key
+- **Auto-fallback** - if Groq limit hits, auto-switches to BazaarLink backup
 
 ---
 
 ## Installation
 
-### Step 1: Get a Free Groq API Key
-1. Go to [console.groq.com](https://console.groq.com)
-2. Sign up for free (no credit card needed)
-3. Go to **API Keys** section
-4. Click **Create API Key** and copy it
+### Step 1: Get Free API Keys
+1. **Groq (Primary):** Go to [console.groq.com](https://console.groq.com), sign up free, create API key
+2. **BazaarLink (Backup):** Go to [bazaarlink.ai](https://bazaarlink.ai), sign up free, create API key
+3. Both are free, no credit card needed
 
 ### Step 2: Download the Extension
 1. Click the orange **Download** button above
@@ -67,11 +67,14 @@ SmartGuide AI is a Chrome extension that helps you navigate and use any website.
 5. Select the extracted `browser-extension` folder
 6. The extension is now installed!
 
-### Step 4: Add Your API Key
+### Step 4: Add Your API Keys
 1. Click the **SmartGuide AI** icon in Chrome toolbar
-2. Paste your Groq API key in the input field
-3. Click **Save API Key**
-4. Status should show **Ready** (green dot)
+2. Paste your Groq API key in the "Primary" field
+3. Paste your BazaarLink API key in the "Backup" field
+4. Click **Save API Keys**
+5. Status should show **Ready** (green dot)
+
+**Note:** If Groq hits its limit, extension auto-switches to BazaarLink. When Groq recovers, it switches back automatically.
 
 ### Step 5: Start Using
 1. Go to any website (YouTube, Facebook, Amazon, etc.)
