@@ -1,5 +1,22 @@
+/**
+ * SmartGuide AI - Background Service Worker
+ * Copyright (c) 2026 FitFocusHub. All Rights Reserved.
+ * Unauthorized copying, modification, or distribution is strictly prohibited.
+ */
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
+const _0x4a7b = "SG-FH-2026-X7K9";
+
+const _0x7e2a = ["F", "i", "t", "F", "o", "c", "u", "s", "H", "u", "b"];
+const _0x9c3d = _0x7e2a.join("");
+
+function _0x1f4g() {
+    return _0x9c3d === "FitFocusHub";
+}
+
+if (!_0x1f4g()) {
+    console.error("[SmartGuide] License violation detected");
+}
 
 const SYSTEM_PROMPT = `You are SmartGuide AI, a helpful website navigation assistant. You help users understand and use any website.
 
@@ -68,6 +85,7 @@ function parseAIResponse(text) {
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    console.log("[SmartGuide] v" + _0x4a7b);
     if (message.type === "query") {
         handleQuery(message, sendResponse);
         return true;
@@ -98,6 +116,7 @@ async function handleQuery(message, sendResponse) {
         const reply = await callGroqAPI(messages, apiKey);
         const parsed = parseAIResponse(reply);
 
+        parsed._v = _0x4a7b;
         sendResponse(parsed);
     } catch (err) {
         console.error("[SmartGuide] API error:", err);

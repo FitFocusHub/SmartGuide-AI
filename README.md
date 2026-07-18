@@ -128,4 +128,8 @@ This makes it easy to follow along, even if you're a beginner.
 
 ## License
 
-MIT
+**Proprietary Software** - Copyright (c) 2026 FitFocusHub. All Rights Reserved.
+
+This software is NOT open source. You may NOT copy, modify, distribute, reverse engineer, or redistribute this software without written permission from FitFocusHub.
+
+See [LICENSE](LICENSE) file for full terms.

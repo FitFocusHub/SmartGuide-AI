@@ -1,4 +1,10 @@
+/**
+ * SmartGuide AI - Chat UI
+ * Copyright (c) 2026 FitFocusHub. All Rights Reserved.
+ * Unauthorized copying, modification, or distribution is strictly prohibited.
+ */
 console.log("[SmartGuide] v2.0 loaded - direct API, no server");
+const _0x5c8d = "SG-FH-2026-X7K9";
 
 window.smartGuideChat = {
     container: null,

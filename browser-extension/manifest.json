@@ -3,6 +3,8 @@
   "name": "SmartGuide AI",
   "version": "2.0.0",
   "description": "Real-time AI guidance for any website - English + Hindi support",
+  "author": "FitFocusHub",
+  "homepage_url": "https://github.com/FitFocusHub/SmartGuide-AI",
   "permissions": [
     "activeTab",
     "storage",
