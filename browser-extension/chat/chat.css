@@ -36,6 +36,22 @@
     box-shadow: 0 6px 25px rgba(102, 126, 234, 0.7);
 }
 
+.sg-dot {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 14px;
+    height: 14px;
+    background: #00ff88;
+    border-radius: 50%;
+    border: 2px solid #0f0f23;
+    animation: sgDot 2s infinite;
+}
+
+.sg-dot.disconnected {
+    background: #ff4444;
+}
+
 .sg-window {
     position: fixed;
     bottom: 90px;
