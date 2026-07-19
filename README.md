@@ -28,8 +28,8 @@ SmartGuide AI is a Chrome extension that helps you navigate and use any website.
 ## Download
 
 <p align="center">
-  <a href="https://github.com/FitFocusHub/SmartGuide-AI/releases/download/v1.0/browser-extension.zip">
-    <img src="https://img.shields.io/badge/Download_browser--extension.zip-Chrome-orange?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Download Extension"/>
+  <a href="https://github.com/FitFocusHub/SmartGuide-AI/archive/refs/heads/master.zip">
+    <img src="https://img.shields.io/badge/Download_Latest_Code-Master-blue?style=for-the-badge&logo=github&logoColor=white" alt="Download Latest"/>
   </a>
 </p>
 
