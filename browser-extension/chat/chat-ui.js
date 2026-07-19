@@ -234,6 +234,10 @@ window.smartGuideChat = {
             if (response.highlight && response.highlight.length > 0) {
                 this.showHighlights(response.highlight);
             }
+            
+            if (response.execute && response.execute.length > 0) {
+                this.executeAutomation(response.execute);
+            }
         });
     },
 
@@ -260,6 +264,33 @@ window.smartGuideChat = {
 
     scrollToBottom() {
         this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+    },
+
+    async executeAutomation(actions) {
+        for (const action of actions) {
+            this.addMessage(`Executing: ${action.action}...`, "steps");
+            
+            try {
+                const result = await new Promise((resolve, reject) => {
+                    chrome.runtime.sendMessage({
+                        type: "automation",
+                        command: action
+                    }, (response) => {
+                        if (chrome.runtime.lastError) {
+                            reject(new Error(chrome.runtime.lastError.message));
+                        } else if (response.error) {
+                            reject(new Error(response.error));
+                        } else {
+                            resolve(response);
+                        }
+                    });
+                });
+                
+                this.addMessage(`Done: ${action.action}`, "ai");
+            } catch (err) {
+                this.addMessage(`Failed: ${err.message}`, "error");
+            }
+        }
     },
 
     startAdTimer() {

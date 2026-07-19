@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "SmartGuide AI",
-  "version": "2.1.0",
-  "description": "Real-time AI guidance for any website - English + Hindi support",
+  "version": "3.0.0",
+  "description": "Advanced AI Navigation, Automation, Desktop and Browser Assistant",
   "author": "FitFocusHub",
   "homepage_url": "https://github.com/FitFocusHub/SmartGuide-AI",
   "permissions": [

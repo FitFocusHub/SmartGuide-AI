@@ -1,27 +1,28 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/SmartGuide-AI-E94560?style=for-the-badge&logo=robot&logoColor=white" alt="SmartGuide AI"/>
-  <img src="https://img.shields.io/badge/Platform-Chrome%20Extension-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Platform"/>
+  <img src="https://img.shields.io/badge/SmartGuide-AI-Ultimate-E94560?style=for-the-badge&logo=robot&logoColor=white" alt="SmartGuide AI"/>
+  <img src="https://img.shields.io/badge/Platform-Chrome%20%2B%20Python-4285F4?style=for-the-badge" alt="Platform"/>
   <img src="https://img.shields.io/badge/Language-English_%2B_Hindi-FF6B6B?style=for-the-badge" alt="Language"/>
 </p>
 
-<h1 align="center">SmartGuide AI</h1>
+<h1 align="center">SmartGuide AI Ultimate</h1>
 
 <p align="center">
-  <b>Real-time AI Guidance for Any Website</b><br>
-  English + Hindi support. Learn any website with AI.
+  <b>Advanced AI Navigation, Automation, Desktop & Browser Assistant</b><br>
+  Understands, explains, guides and automates everything on your computer.
 </p>
 
 ---
 
-## What is SmartGuide AI?
+## What is SmartGuide AI Ultimate?
 
-SmartGuide AI is a Chrome extension that helps you navigate and use any website. Just ask a question in English or Hindi, and it will guide you step-by-step with highlighted instructions.
+SmartGuide AI Ultimate is a Chrome extension + Python automation server that understands your screen, remembers context, and can automate tasks on any website or desktop application.
 
-**How it works:**
-1. You ask: "How to subscribe on YouTube?"
-2. AI responds with step-by-step instructions
-3. If you still don't understand, AI highlights the exact spot on the page with a green box
-4. You follow along and learn!
+**Features:**
+- Screen understanding - detects buttons, inputs, menus, etc.
+- Conversation memory - remembers previous interactions
+- Full automation - clicks, types, scrolls automatically
+- 50+ apps supported - YouTube, Chrome, VS Code, Word, Excel, etc.
+- English + Hindi responses
 
 ---
 
@@ -35,104 +36,83 @@ SmartGuide AI is a Chrome extension that helps you navigate and use any website.
 
 ---
 
-## Features
-
-- **Step-by-step guidance** - tell AI what you want to do, it will teach you
-- **Auto-highlight where to click** - AI highlights the exact spot with a green box
-- **Works on any website** - YouTube, Facebook, Amazon, Google and more
-- **English + Hindi responses** - learn in your preferred language
-- **Floating chat icon** - purple bubble with pulse animation, always accessible
-- **No server needed** - runs directly in your browser with your own API key
-- **Auto-fallback** - if Groq limit hits, auto-switches to BazaarLink backup
-
----
-
 ## Installation
 
-### Step 1: Get Free API Keys
+### Step 1: Install Python Dependencies
+1. Open Command Prompt
+2. Run: `pip install -r server/requirements.txt`
+3. Or run `setup.bat` for automatic setup
+
+### Step 2: Get Free API Keys
 1. **Groq (Primary):** Go to [console.groq.com](https://console.groq.com), sign up free, create API key
 2. **BazaarLink (Backup):** Go to [bazaarlink.ai](https://bazaarlink.ai), sign up free, create API key
-3. Both are free, no credit card needed
 
-### Step 2: Download the Extension
-1. Click the orange **Download** button above
-2. Save the file `browser-extension.zip` to your computer
-3. Extract the zip file (right-click > Extract All)
+### Step 3: Load Chrome Extension
+1. Open Chrome, go to `chrome://extensions/`
+2. Enable **Developer mode** (top right)
+3. Click **Load unpacked**
+4. Select the `browser-extension` folder
 
-### Step 3: Load in Chrome
-1. Open Chrome browser
-2. Type `chrome://extensions/` in the address bar and press Enter
-3. Turn on **"Developer mode"** (top right toggle)
-4. Click **"Load unpacked"** button
-5. Select the extracted `browser-extension` folder
-6. The extension is now installed!
-
-### Step 4: Add Your API Keys
-1. Click the **SmartGuide AI** icon in Chrome toolbar
-2. Paste your Groq API key in the "Primary" field
-3. Paste your BazaarLink API key in the "Backup" field
+### Step 4: Add API Keys
+1. Click SmartGuide AI icon in toolbar
+2. Enter Groq API key (Primary)
+3. Enter BazaarLink API key (Backup)
 4. Click **Save API Keys**
-5. Status should show **Ready** (green dot)
 
-**Note:** If Groq hits its limit, extension auto-switches to BazaarLink. When Groq recovers, it switches back automatically.
+### Step 5: Start Automation Server
+1. Open Command Prompt
+2. Navigate to server folder: `cd server`
+3. Run: `python server.py`
+4. Keep this window open
 
-### Step 5: Start Using
-1. Go to any website (YouTube, Facebook, Amazon, etc.)
-2. Click the purple chat bubble in the bottom-right corner
-3. Type your question about the current page
-4. AI will guide you with highlighted instructions
-
-**Works on:**
-- YouTube (video controls)
-- Social media (Facebook, Instagram)
-- Shopping sites (Amazon, Flipkart)
-- Any website
+### Step 6: Start Using
+1. Go to any website
+2. Click the purple chat bubble
+3. Ask your question
+4. AI will guide you or automate the task
 
 ---
 
-## How AI Highlights Work
+## Automation Features
 
-When you ask a question, the AI:
-1. Analyzes what you're asking
-2. Finds the exact location on the page
-3. Draws a **green box** around the element
-4. Shows you exactly where to click or what to do
-
-This makes it easy to follow along, even if you're a beginner.
+When server is running, AI can:
+- Click buttons automatically
+- Type text
+- Press keyboard shortcuts
+- Scroll pages
+- Open/close applications
+- Manage windows
+- Read clipboard
+- Take screenshots
+- And much more!
 
 ---
 
 ## Requirements
 
+- Python 3.8+
 - Chrome/Edge/Brave browser
-- Free Groq API key (get at console.groq.com)
+- Free Groq or BazaarLink API key
 - Internet connection
 
 ---
 
 ## Troubleshooting
 
+### "Server not connected" error
+- Make sure `python server.py` is running
+- Check if port 8765 is not blocked
+
 ### Extension not loading
 - Make sure Developer mode is ON
 - Try extracting the zip file again
-- Restart Chrome and try again
-
-### "No API Key" error
-- Click the extension icon
-- Enter your Groq API key
-- Click Save API Key
 
 ### AI not responding
-- Check your internet connection
-- Make sure your API key is valid
-- Wait a few seconds and try again
+- Check your API keys are valid
+- Check internet connection
 
 ---
 
 ## License
 
-**Proprietary Software** - Copyright (c) 2026 FitFocusHub. All Rights Reserved.
-
-This software is NOT open source. You may NOT copy, modify, distribute, reverse engineer, or redistribute this software without written permission from FitFocusHub.
-
-See [LICENSE](LICENSE) file for full terms.
+**Proprietary** - Copyright (c) 2026 FitFocusHub. All Rights Reserved.
