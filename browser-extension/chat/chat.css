@@ -118,6 +118,22 @@
     font-size: 16px;
 }
 
+.sg-btn-clear {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.sg-btn-clear:hover {
+    background: rgba(255, 100, 100, 0.5);
+}
+
 .sg-messages {
     flex: 1;
     overflow-y: auto;

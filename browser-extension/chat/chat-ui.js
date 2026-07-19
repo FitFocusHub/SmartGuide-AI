@@ -3,7 +3,7 @@
  * Copyright (c) 2026 FitFocusHub. All Rights Reserved.
  * Unauthorized copying, modification, or distribution is strictly prohibited.
  */
-console.log("[SmartGuide] v2.0 loaded - direct API, no server");
+console.log("[SmartGuide] v2.1 loaded - with memory");
 const _0x5c8d = "SG-FH-2026-X7K9";
 
 window.smartGuideChat = {
@@ -24,8 +24,8 @@ window.smartGuideChat = {
 
     async checkApiKey() {
         try {
-            const result = await chrome.storage.local.get(["apiKey"]);
-            if (result.apiKey) {
+            const result = await chrome.storage.local.get(["apiKey", "backupApiKey"]);
+            if (result.apiKey || result.backupApiKey) {
                 this.showStatus("Ready", "#00ff88");
             } else {
                 this.showStatus("No API Key", "#ff4444");
@@ -46,7 +46,16 @@ window.smartGuideChat = {
         const els = [];
         const seen = new Set();
         
-        const selectors = 'button, a, [role="button"], input[type="text"], input[type="email"], input[type="search"], textarea, [onclick], [tabindex]';
+        const selectors = [
+            'button', 'a', '[role="button"]',
+            'input[type="text"]', 'input[type="email"]', 'input[type="search"]', 'input[type="password"]', 'input[type="number"]',
+            'textarea', 'select',
+            '[onclick]', '[tabindex]',
+            '[role="menuitem"]', '[role="tab"]', '[role="link"]', '[role="navigation"]',
+            'nav a', 'nav button',
+            '[class*="menu"]', '[class*="btn"]', '[class*="button"]', '[class*="nav"]',
+            '[aria-label]', '[title]'
+        ].join(', ');
         
         document.querySelectorAll(selectors).forEach((el) => {
             const r = el.getBoundingClientRect();
@@ -54,39 +63,53 @@ window.smartGuideChat = {
             
             if (r.width < 5 || r.height < 5 || r.width > 800) return;
             if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') return;
-            if (r.bottom < 0 || r.top > window.innerHeight) return;
+            if (r.bottom < -50 || r.top > window.innerHeight + 50) return;
             
             let text = '';
             if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                text = el.placeholder || el.value || el.name || el.id || '';
+                text = el.placeholder || el.value || el.name || el.id || el.type || '';
+            } else if (el.tagName === 'SELECT') {
+                text = el.options[el.selectedIndex]?.text || el.name || el.id || '';
             } else {
-                text = el.textContent?.trim() || el.getAttribute('aria-label') || el.title || '';
+                text = el.textContent?.trim() || el.getAttribute('aria-label') || el.title || el.getAttribute('data-tooltip') || '';
             }
-            text = text.substring(0, 50).replace(/\s+/g, ' ');
+            text = text.substring(0, 80).replace(/\s+/g, ' ').trim();
             
-            if (!text) return;
+            if (!text && !el.id && !el.getAttribute('aria-label')) return;
             
             const key = `${Math.round(r.x)}-${Math.round(r.y)}-${text.substring(0,20)}`;
             if (seen.has(key)) return;
             seen.add(key);
             
+            const rect = el.getBoundingClientRect();
             els.push({
                 tag: el.tagName.toLowerCase(),
-                text: text,
-                x: Math.round(r.x + r.width / 2),
-                y: Math.round(r.y + r.height / 2),
-                w: Math.round(r.width),
-                h: Math.round(r.height),
+                text: text || el.id || el.getAttribute('aria-label') || 'unlabeled',
+                x: Math.round(rect.x + rect.width / 2),
+                y: Math.round(rect.y + rect.height / 2),
+                w: Math.round(rect.width),
+                h: Math.round(rect.height),
                 id: el.id || '',
-                href: el.href ? el.href.substring(0, 50) : ''
+                classes: el.className?.toString().substring(0, 50) || '',
+                role: el.getAttribute('role') || '',
+                type: el.type || '',
+                href: el.href ? el.href.substring(0, 80) : '',
+                disabled: el.disabled || false,
+                ariaLabel: el.getAttribute('aria-label') || ''
             });
         });
+        
+        const pageText = document.body?.innerText?.substring(0, 500) || '';
         
         return {
             url: location.href,
             title: document.title,
+            domain: location.hostname,
             viewport: { w: window.innerWidth, h: window.innerHeight },
-            elements: els.slice(0, 40)
+            scrollY: Math.round(window.scrollY),
+            scrollX: Math.round(window.scrollX),
+            pageText: pageText,
+            elements: els.slice(0, 50)
         };
     },
 
@@ -106,6 +129,7 @@ window.smartGuideChat = {
                     </div>
                     <div class="sg-header-right">
                         <span id="sg-status" class="sg-status">Connecting...</span>
+                        <button id="sg-clear" class="sg-btn-clear" title="Clear memory">🗑</button>
                         <button id="sg-close" class="sg-btn-close">×</button>
                     </div>
                 </div>
@@ -134,6 +158,7 @@ window.smartGuideChat = {
         document.getElementById("sg-bubble").onclick = () => this.toggle();
         document.getElementById("sg-close").onclick = () => this.close();
         document.getElementById("sg-send").onclick = () => this.sendMessage();
+        document.getElementById("sg-clear").onclick = () => this.clearHistory();
         this.inputField.onkeypress = (e) => { if (e.key === "Enter") this.sendMessage(); };
     },
 
@@ -149,6 +174,18 @@ window.smartGuideChat = {
         document.getElementById("sg-bubble").style.display = "flex";
         document.getElementById("sg-window").style.display = "none";
         this.isOpen = false;
+    },
+
+    clearHistory() {
+        chrome.runtime.sendMessage({ type: "clear_history" }, () => {
+            this.messagesContainer.innerHTML = `
+                <div class="sg-msg sg-msg-system">
+                    <div class="sg-msg-content">
+                        Memory cleared! Naya conversation start karo.
+                    </div>
+                </div>
+            `;
+        });
     },
 
     sendMessage() {

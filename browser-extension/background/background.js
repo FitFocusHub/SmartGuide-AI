@@ -8,42 +8,78 @@ const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
 const BAZAARLINK_API_URL = "https://bazaarlink.ai/api/v1/chat/completions";
 const BAZAARLINK_MODEL = "auto:free";
+const MAX_HISTORY = 20;
 
 const _0x4a7b = "SG-FH-2026-X7K9";
 const _0x7e2a = ["F", "i", "t", "F", "o", "c", "u", "s", "H", "u", "b"];
 const _0x9c3d = _0x7e2a.join("");
 
-const SYSTEM_PROMPT = `You are SmartGuide AI, a helpful website navigation assistant. You help users understand and use any website.
+const SYSTEM_PROMPT = `You are SmartGuide AI Pro, an advanced multimodal AI Desktop & Web Navigation Assistant.
 
-IMPORTANT RULES:
-1. ALWAYS respond in the SAME LANGUAGE the user writes in
-2. If user writes in Hindi (Hinglish/Devanagari), respond in Hindi
-3. If user writes in English, respond in English
-4. Keep responses SHORT and STEP-BY-STEP (max 5 steps)
-5. For YouTube: explain play, pause, subscribe, like, comment, search, volume, fullscreen
-6. For social media: explain posting, liking, commenting, sharing, following
-7. For shopping: explain search, filter, add to cart, buy, reviews
-8. For Google: explain search, filters, images, advanced search
+Your primary goal is to understand everything currently visible on the user's screen, remember previous interactions, reason about the current task, and either:
+1. Explain what the user should do.
+2. Perform the requested action if automation tools are available.
+3. Ask only when absolutely necessary.
 
-ELEMENT FORMAT:
-When telling where to click, use this format:
-CLICK: "[element text]" at (x, y)
+You are NOT a chatbot. You behave like an intelligent desktop assistant capable of:
+- Understanding websites, desktop software, browser tabs, Windows applications
+- Understanding dialogs, forms, buttons, menus, context menus
+- Understanding PDFs, images, videos, spreadsheets, IDEs
+- Understanding system settings, File Explorer, Control Panel
 
-RESPONSE FORMAT:
-Always return JSON with these fields:
+Never give generic answers. Always analyze the actual interface first.
+
+MEMORY: Maintain memory throughout the conversation. Always remember: current website, current software, current page, previous commands, completed actions, pending actions, current goal. Never forget previous context unless user says "reset", "forget", or "new task".
+
+SCREEN UNDERSTANDING: Always inspect every visible element. Detect: buttons, inputs, checkboxes, radio buttons, dropdowns, icons, menus, tabs, navigation bars, cards, images, videos, tables, text, dialogs, notifications, errors, tooltips, popups, scrollbars, links, ads, disabled controls.
+
+For every element determine: visible text, role, type, state (enabled/disabled/selected/focused), position (x, y, width, height), confidence.
+
+COORDINATES: Every clickable element must include x, y, width, height, centerX, centerY, confidence. Never guess. If confidence < 80%, say so.
+
+NAVIGATION: Understand navigation on: Google, YouTube, Facebook, Instagram, LinkedIn, Twitter/X, GitHub, Gmail, Amazon, Flipkart, Netflix, Spotify, Discord, Slack, Figma, Canva, VS Code, Photoshop, Word, Excel, Windows Settings, File Explorer, Terminal, and any unknown website.
+
+EXPLANATION MODE: Explain exactly what to click. Use format: CLICK: "[element text]" at (x, y). Never say "Maybe", "Probably", "I think". Be precise.
+
+LANGUAGE: Always reply in the user's language. Hindi -> Hindi, English -> English, Mixed -> Mixed.
+
+OUTPUT FORMAT: Return ONLY valid JSON with these fields:
 - explanation: brief text answer (in user's language)
 - steps: array of step objects with "description" field
 - highlight: array of elements to highlight with {x, y, w, h, text} (only if needed)
+- currentApp: what software/website is open
+- currentPage: what page/screen is visible
 
-Example:
-{
-  "explanation": "YouTube pe subscribe karne ke liye...",
-  "steps": [{"description": "Channel page pe jao"}, {"description": "Subscribe button dabao"}],
-  "highlight": [{"x": 400, "y": 300, "w": 120, "h": 40, "text": "Subscribe"}]
-}`;
+ERROR HANDLING: If something cannot be detected, explain why. Never hallucinate elements. Never invent buttons. Never invent coordinates.
 
+You should behave like GPT-4 Vision, Claude Computer Use, Microsoft Copilot Vision combined together. Always prefer actual UI understanding over assumptions. Always maintain task memory. Always continue from previous context. Always be accurate. Never lose context during the conversation.`;
+
+let conversationHistory = [];
 let groqFailCount = 0;
 let activeApi = "groq";
+
+async function loadHistory() {
+    try {
+        const result = await chrome.storage.local.get(["conversationHistory"]);
+        conversationHistory = result.conversationHistory || [];
+    } catch (e) {
+        conversationHistory = [];
+    }
+}
+
+async function saveHistory() {
+    try {
+        await chrome.storage.local.set({ conversationHistory });
+    } catch (e) {}
+}
+
+function addToHistory(role, content) {
+    conversationHistory.push({ role, content });
+    if (conversationHistory.length > MAX_HISTORY) {
+        conversationHistory = conversationHistory.slice(-MAX_HISTORY);
+    }
+    saveHistory();
+}
 
 async function callAPI(url, model, messages, apiKey) {
     const response = await fetch(url, {
@@ -56,7 +92,7 @@ async function callAPI(url, model, messages, apiKey) {
             model: model,
             messages: messages,
             temperature: 0.7,
-            max_tokens: 1024
+            max_tokens: 2048
         })
     });
 
@@ -121,24 +157,18 @@ async function callWithFallback(messages, groqKey, backupKey) {
     throw new Error("No valid API key. Add Groq or BazaarLink key in extension settings.");
 }
 
-async function trySwitchBackToGroq(groqKey) {
-    if (!groqKey || activeApi !== "bazaarlink") return;
-
-    try {
-        await callGroq(messages, groqKey);
-        console.log("[SmartGuide] Groq available again, switching back...");
-        activeApi = "groq";
-        groqFailCount = 0;
-        chrome.storage.local.set({ activeApi: "groq" });
-    } catch (e) {
-        // Groq still down, stay on BazaarLink
-    }
-}
-
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log("[SmartGuide] v" + _0x4a7b + " | Active: " + activeApi);
+
     if (message.type === "query") {
         handleQuery(message, sendResponse);
+        return true;
+    }
+
+    if (message.type === "clear_history") {
+        conversationHistory = [];
+        saveHistory();
+        sendResponse({ status: "cleared" });
         return true;
     }
 });
@@ -156,18 +186,26 @@ async function handleQuery(message, sendResponse) {
             return;
         }
 
+        if (conversationHistory.length === 0) {
+            await loadHistory();
+        }
+
         const contextStr = message.context
-            ? `\nPage: ${message.context.title}\nURL: ${message.context.url}\nElements: ${JSON.stringify(message.context.elements?.slice(0, 15) || [])}`
+            ? `\n\n[CURRENT SCREEN CONTEXT]\nPage Title: ${message.context.title}\nURL: ${message.context.url}\nVisible Elements: ${JSON.stringify(message.context.elements?.slice(0, 20) || [])}\nViewport: ${JSON.stringify(message.context.viewport || {})}`
             : "";
+
+        addToHistory("user", message.query + contextStr);
 
         const messages = [
             { role: "system", content: SYSTEM_PROMPT },
-            { role: "user", content: `${message.query}${contextStr}` }
+            ...conversationHistory
         ];
 
         const { reply, api } = await callWithFallback(messages, groqKey, backupKey);
-        const parsed = parseAIResponse(reply);
 
+        addToHistory("assistant", reply);
+
+        const parsed = parseAIResponse(reply);
         parsed._v = _0x4a7b;
         parsed._api = api;
         sendResponse(parsed);
@@ -176,3 +214,5 @@ async function handleQuery(message, sendResponse) {
         sendResponse({ error: `Error: ${err.message}` });
     }
 }
+
+loadHistory();
