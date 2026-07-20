@@ -62,10 +62,6 @@
                     <span id="active-api" class="value">None</span>
                 </div>
                 <div class="info-row">
-                    <span class="label">Server:</span>
-                    <span id="server-status" class="value">Offline</span>
-                </div>
-                <div class="info-row">
                     <span class="label">Version:</span>
                     <span class="value">1.0.0</span>
                 </div>
@@ -74,9 +70,15 @@
             <div class="server-section">
                 <div class="server-header">
                     <h3>Automation Server</h3>
-                    <span id="server-badge" class="server-badge offline">Offline</span>
                 </div>
-                <p class="server-desc">Required for automation (typing, clicking, apps).</p>
+                
+                <div id="server-status-box" class="server-status-box disconnected">
+                    <div class="server-status-icon" id="server-status-icon">X</div>
+                    <div class="server-status-info">
+                        <div class="server-status-title" id="server-status-title">Server Disconnected</div>
+                        <div class="server-status-desc" id="server-status-desc">Start server for automation</div>
+                    </div>
+                </div>
                 
                 <div id="server-offline-panel">
                     <button id="start-server-btn" class="btn primary full-width start-server-btn">
@@ -92,7 +94,7 @@
                 
                 <div id="server-online-panel" style="display:none;">
                     <div class="server-running-msg">
-                        Server is running! You can use automation.
+                        Automation ready! You can use typing, clicking, apps.
                     </div>
                 </div>
             </div>

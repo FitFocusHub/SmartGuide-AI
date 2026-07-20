@@ -19,6 +19,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const serverInstructions = document.getElementById("server-instructions");
     const serverOfflinePanel = document.getElementById("server-offline-panel");
     const serverOnlinePanel = document.getElementById("server-online-panel");
+    const serverStatusBox = document.getElementById("server-status-box");
+    const serverStatusIcon = document.getElementById("server-status-icon");
+    const serverStatusTitle = document.getElementById("server-status-title");
+    const serverStatusDesc = document.getElementById("server-status-desc");
 
     chrome.storage.local.get(["enabled", "apiKey", "backupApiKey", "activeApi", "serverStatus"], (result) => {
         enableToggle.checked = result.enabled !== false;
@@ -38,17 +42,17 @@ document.addEventListener("DOMContentLoaded", () => {
         const isOnline = status === "connected";
         
         if (isOnline) {
-            serverStatus.textContent = "Online";
-            serverStatus.style.color = "#00ff88";
-            serverBadge.textContent = "Online";
-            serverBadge.className = "server-badge online";
+            serverStatusBox.className = "server-status-box connected";
+            serverStatusIcon.textContent = "\u2713";
+            serverStatusTitle.textContent = "Server Connected";
+            serverStatusDesc.textContent = "Automation ready - typing, clicking, apps work!";
             serverOfflinePanel.style.display = "none";
             serverOnlinePanel.style.display = "block";
         } else {
-            serverStatus.textContent = "Offline";
-            serverStatus.style.color = "#ff4444";
-            serverBadge.textContent = "Offline";
-            serverBadge.className = "server-badge offline";
+            serverStatusBox.className = "server-status-box disconnected";
+            serverStatusIcon.textContent = "X";
+            serverStatusTitle.textContent = "Server Disconnected";
+            serverStatusDesc.textContent = "Start server for automation";
             serverOfflinePanel.style.display = "block";
             serverOnlinePanel.style.display = "none";
         }

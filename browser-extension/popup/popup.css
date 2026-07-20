@@ -284,10 +284,7 @@ kbd {
 }
 
 .server-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px;
+    margin-bottom: 10px;
 }
 
 .server-section h3 {
@@ -296,27 +293,69 @@ kbd {
     margin: 0;
 }
 
-.server-badge {
-    font-size: 10px;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-weight: bold;
+.server-status-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
 }
 
-.server-badge.online {
+.server-status-box.connected {
+    background: #003300;
+    border: 2px solid #00ff88;
+}
+
+.server-status-box.disconnected {
+    background: #330000;
+    border: 2px solid #ff4444;
+}
+
+.server-status-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.server-status-box.connected .server-status-icon {
     background: #00ff88;
     color: #000;
 }
 
-.server-badge.offline {
+.server-status-box.disconnected .server-status-icon {
     background: #ff4444;
     color: #fff;
 }
 
-.server-desc {
+.server-status-info {
+    flex: 1;
+}
+
+.server-status-title {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+.server-status-box.connected .server-status-title {
+    color: #00ff88;
+}
+
+.server-status-box.disconnected .server-status-title {
+    color: #ff4444;
+}
+
+.server-status-desc {
     font-size: 11px;
     color: #888;
-    margin-bottom: 10px;
 }
 
 .start-server-btn {
