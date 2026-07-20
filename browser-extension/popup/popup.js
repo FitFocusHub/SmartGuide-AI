@@ -19,7 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const serverInstructions = document.getElementById("server-instructions");
     const serverOfflinePanel = document.getElementById("server-offline-panel");
     const serverOnlinePanel = document.getElementById("server-online-panel");
-    const copyCommandBtn = document.getElementById("copy-command");
 
     chrome.storage.local.get(["enabled", "apiKey", "backupApiKey", "activeApi", "serverStatus"], (result) => {
         enableToggle.checked = result.enabled !== false;
@@ -63,14 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
             serverInstructions.style.display = "none";
             startServerBtn.textContent = "Start Server";
         }
-    });
-
-    copyCommandBtn.addEventListener("click", () => {
-        const cmd = document.getElementById("server-command").textContent;
-        navigator.clipboard.writeText(cmd).then(() => {
-            copyCommandBtn.textContent = "Copied!";
-            setTimeout(() => { copyCommandBtn.textContent = "Copy"; }, 2000);
-        });
     });
 
     enableToggle.addEventListener("change", () => {
