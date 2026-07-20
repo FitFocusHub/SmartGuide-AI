@@ -849,13 +849,63 @@ Never hallucinate interface elements.
 
 Always verify before responding.
 
-OUTPUT FORMAT: Return ONLY valid JSON with these fields:
-- explanation: brief text answer (in user's language)
-- steps: array of step objects with "description" field
-- highlight: array of elements to highlight with {x, y, w, h, text} (only if needed)
-- execute: array of automation actions with {action, selector, text, x, y} (if automation is available)
-- currentApp: what software/website is open
-- currentPage: what page/screen is visible`;
+========================
+BROWSER AUTOMATION (EXISTS!)
+========================
+
+You HAVE browser automation tools. ALWAYS use them when user asks.
+
+Available browser actions - return in "execute" array:
+
+OPEN TAB:
+{"action": "open_tab", "url": "https://www.google.com"}
+
+NAVIGATE CURRENT TAB:
+{"action": "navigate", "url": "https://www.youtube.com"}
+
+CLOSE TAB:
+{"action": "close_tab", "tabId": 123}
+
+SWITCH TO TAB:
+{"action": "switch_tab", "tabId": 123}
+
+LIST ALL TABS:
+{"action": "list_tabs"}
+
+GO BACK:
+{"action": "go_back"}
+
+GO FORWARD:
+{"action": "go_forward"}
+
+RELOAD PAGE:
+{"action": "reload"}
+
+When user says:
+- "naya tab kholo" -> open_tab
+- "Google kholo" -> navigate with google.com URL
+- "YouTube kholo" -> navigate with youtube.com URL
+- "new tab" -> open_tab
+- "go to amazon" -> navigate with amazon.com URL
+- "page reload karo" -> reload
+- "back jao" -> go_back
+- "forward jao" -> go_forward
+- "band karo" -> close_tab
+
+NEVER say you cannot open tabs or navigate. You CAN. Use the execute array.
+
+========================
+OUTPUT FORMAT
+========================
+
+Return ONLY valid JSON:
+
+{
+  "explanation": "brief answer in user's language",
+  "steps": [{"description": "step text"}],
+  "highlight": [{"x": 0, "y": 0, "w": 100, "h": 50, "text": "element"}],
+  "execute": [{"action": "open_tab", "url": "https://google.com"}]
+}`;
 
 let conversationHistory = [];
 let groqFailCount = 0;
@@ -1104,6 +1154,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({ connected: serverConnected });
         return true;
     }
+
+    if (message.type === "browser_action") {
+        handleBrowserAction(message, sendResponse);
+        return true;
+    }
 });
 
 async function handleAutomation(message, sendResponse) {
@@ -1115,6 +1170,113 @@ async function handleAutomation(message, sendResponse) {
         
         const result = await sendToServer(message.command);
         sendResponse(result);
+    } catch (err) {
+        sendResponse({ error: err.message });
+    }
+}
+
+async function handleBrowserAction(message, sendResponse) {
+    const action = message.action;
+    
+    try {
+        if (action === "open_tab") {
+            const url = message.url || "chrome://newtab/";
+            chrome.tabs.create({ url: url }, (tab) => {
+                sendResponse({ status: "success", action: "open_tab", tabId: tab.id, url: url });
+            });
+            return true;
+        }
+        
+        if (action === "close_tab") {
+            const tabId = message.tabId;
+            if (tabId) {
+                chrome.tabs.remove(tabId, () => {
+                    sendResponse({ status: "success", action: "close_tab" });
+                });
+            }
+            return true;
+        }
+        
+        if (action === "switch_tab") {
+            const tabId = message.tabId;
+            if (tabId) {
+                chrome.tabs.update(tabId, { active: true }, (tab) => {
+                    sendResponse({ status: "success", action: "switch_tab", tabId: tabId });
+                });
+            }
+            return true;
+        }
+        
+        if (action === "list_tabs") {
+            chrome.tabs.query({}, (tabs) => {
+                const tabList = tabs.map(t => ({ id: t.id, title: t.title, url: t.url, active: t.active }));
+                sendResponse({ status: "success", tabs: tabList });
+            });
+            return true;
+        }
+        
+        if (action === "navigate") {
+            const url = message.url;
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                if (tabs[0]) {
+                    chrome.tabs.update(tabs[0].id, { url: url }, (tab) => {
+                        sendResponse({ status: "success", action: "navigate", url: url });
+                    });
+                }
+            });
+            return true;
+        }
+        
+        if (action === "go_back") {
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                if (tabs[0]) {
+                    chrome.tabs.goBack(tabs[0].id, () => {
+                        sendResponse({ status: "success", action: "go_back" });
+                    });
+                }
+            });
+            return true;
+        }
+        
+        if (action === "go_forward") {
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                if (tabs[0]) {
+                    chrome.tabs.goForward(tabs[0].id, () => {
+                        sendResponse({ status: "success", action: "go_forward" });
+                    });
+                }
+            });
+            return true;
+        }
+        
+        if (action === "reload") {
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                if (tabs[0]) {
+                    chrome.tabs.reload(tabs[0].id, () => {
+                        sendResponse({ status: "success", action: "reload" });
+                    });
+                }
+            });
+            return true;
+        }
+        
+        if (action === "get_current_tab") {
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                if (tabs[0]) {
+                    sendResponse({ 
+                        status: "success", 
+                        tab: { 
+                            id: tabs[0].id, 
+                            title: tabs[0].title, 
+                            url: tabs[0].url 
+                        } 
+                    });
+                }
+            });
+            return true;
+        }
+        
+        sendResponse({ error: "Unknown browser action: " + action });
     } catch (err) {
         sendResponse({ error: err.message });
     }

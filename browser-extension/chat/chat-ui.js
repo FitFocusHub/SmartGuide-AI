@@ -271,22 +271,47 @@ window.smartGuideChat = {
             this.addMessage(`Executing: ${action.action}...`, "steps");
             
             try {
-                const result = await new Promise((resolve, reject) => {
-                    chrome.runtime.sendMessage({
-                        type: "automation",
-                        command: action
-                    }, (response) => {
-                        if (chrome.runtime.lastError) {
-                            reject(new Error(chrome.runtime.lastError.message));
-                        } else if (response.error) {
-                            reject(new Error(response.error));
-                        } else {
-                            resolve(response);
-                        }
+                if (action.action === "open_tab" || action.action === "navigate" || 
+                    action.action === "close_tab" || action.action === "switch_tab" ||
+                    action.action === "go_back" || action.action === "go_forward" ||
+                    action.action === "reload" || action.action === "list_tabs") {
+                    
+                    const result = await new Promise((resolve, reject) => {
+                        chrome.runtime.sendMessage({
+                            type: "browser_action",
+                            action: action.action,
+                            url: action.url,
+                            tabId: action.tabId
+                        }, (response) => {
+                            if (chrome.runtime.lastError) {
+                                reject(new Error(chrome.runtime.lastError.message));
+                            } else if (response.error) {
+                                reject(new Error(response.error));
+                            } else {
+                                resolve(response);
+                            }
+                        });
                     });
-                });
-                
-                this.addMessage(`Done: ${action.action}`, "ai");
+                    
+                    this.addMessage(`Done: ${action.action}`, "ai");
+                } else {
+                    const result = await new Promise((resolve, reject) => {
+                        chrome.runtime.sendMessage({
+                            type: "automation",
+                            command: action
+                        }, (response) => {
+                            if (chrome.runtime.lastError) {
+                                reject(new Error(chrome.runtime.lastError.message));
+                            } else if (response.error) {
+                                reject(new Error(response.error));
+                            } else {
+                                resolve(response);
+                            }
+                        });
+                    });
+                    
+                    this.addMessage(`Done: ${action.action}`, "ai");
+                }
             } catch (err) {
                 this.addMessage(`Failed: ${err.message}`, "error");
             }
