@@ -31,13 +31,24 @@ window.smartGuideChat = {
             
             if (!hasApi) {
                 this.showStatus("No API Key", "#ff4444");
-            } else if (!serverOk) {
+                return;
+            }
+
+            // Check internet
+            try {
+                await fetch("https://api.groq.com/openai/v1/models", { method: "HEAD", mode: "no-cors" });
+            } catch (e) {
+                this.showStatus("No Internet", "#ffa500");
+                return;
+            }
+
+            if (!serverOk) {
                 this.showStatus("Server Offline", "#ffaa00");
             } else {
                 this.showStatus("Ready", "#00ff88");
             }
         } catch (e) {
-            this.showStatus("Ready", "#00ff88");
+            this.showStatus("Error", "#ff4444");
         }
     },
 
@@ -48,8 +59,14 @@ window.smartGuideChat = {
                 if (status === "connected") {
                     this.showStatus("Ready", "#00ff88");
                 } else {
-                    const hasKey = document.getElementById("sg-status")?.textContent !== "No API Key";
-                    if (hasKey) this.showStatus("Server Offline", "#ffaa00");
+                    chrome.storage.local.get(["apiKey", "backupApiKey"], (result) => {
+                        const hasKey = result.apiKey || result.backupApiKey;
+                        if (!hasKey) {
+                            this.showStatus("No API Key", "#ff4444");
+                        } else {
+                            this.showStatus("Server Offline", "#ffaa00");
+                        }
+                    });
                 }
             }
         });

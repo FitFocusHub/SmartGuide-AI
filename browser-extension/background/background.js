@@ -1077,7 +1077,19 @@ async function handleQuery(message, sendResponse) {
         sendResponse(parsed);
     } catch (err) {
         console.error("[SmartGuide] API error:", err);
-        sendResponse({ error: `Error: ${err.message}` });
+        let errorMsg = err.message;
+        
+        if (err.message.includes("429") || err.message.includes("rate")) {
+            errorMsg = "Rate limit exceeded! Wait a moment and try again.";
+        } else if (err.message.includes("401") || err.message.includes("unauthorized")) {
+            errorMsg = "Invalid API key! Check your key in extension settings.";
+        } else if (err.message.includes("Failed to fetch") || err.message.includes("NetworkError")) {
+            errorMsg = "No internet connection! Check your network.";
+        } else if (err.message.includes("503") || err.message.includes("overloaded")) {
+            errorMsg = "Server is overloaded! Try again in a few seconds.";
+        }
+        
+        sendResponse({ error: errorMsg });
     }
 }
 

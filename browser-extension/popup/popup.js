@@ -97,27 +97,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateStatus(key, backupKey, active) {
         const hasAny = key || backupKey;
-        if (hasAny) {
-            statusIndicator.className = "status connected";
-            statusText.textContent = "Ready";
-            keyStatus.textContent = "Set";
-            keyStatus.style.color = "#00ff88";
-        } else {
+        
+        if (!hasAny) {
             statusIndicator.className = "status disconnected";
             statusText.textContent = "No API Key";
             keyStatus.textContent = "Not Set";
             keyStatus.style.color = "#ff4444";
+            activeApi.textContent = "None";
+            activeApi.style.color = "#888";
+            return;
         }
 
-        if (active === "groq") {
-            activeApi.textContent = "Groq";
-            activeApi.style.color = "#00ff88";
-        } else if (active === "bazaarlink") {
-            activeApi.textContent = "BazaarLink (Fallback)";
+        // API key exists - check if internet works
+        fetch("https://api.groq.com/openai/v1/models", {
+            method: "HEAD",
+            mode: "no-cors"
+        }).then(() => {
+            // Internet OK
+            statusIndicator.className = "status connected";
+            statusText.textContent = "Ready";
+            keyStatus.textContent = "Set";
+            keyStatus.style.color = "#00ff88";
+            
+            if (active === "groq") {
+                activeApi.textContent = "Groq";
+                activeApi.style.color = "#00ff88";
+            } else if (active === "bazaarlink") {
+                activeApi.textContent = "BazaarLink (Fallback)";
+                activeApi.style.color = "#ffa500";
+            } else {
+                activeApi.textContent = key ? "Groq" : (backupKey ? "BazaarLink" : "None");
+                activeApi.style.color = "#888";
+            }
+        }).catch(() => {
+            // No internet
+            statusIndicator.className = "status disconnected";
+            statusText.textContent = "No Internet";
+            keyStatus.textContent = "Set (No Net)";
+            keyStatus.style.color = "#ffa500";
+            activeApi.textContent = "Offline";
             activeApi.style.color = "#ffa500";
-        } else {
-            activeApi.textContent = key ? "Groq" : (backupKey ? "BazaarLink" : "None");
-            activeApi.style.color = "#888";
-        }
+        });
     }
 });
