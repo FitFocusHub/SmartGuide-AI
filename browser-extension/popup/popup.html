@@ -72,13 +72,31 @@
             </div>
 
             <div class="server-section">
-                <div class="server-info">
+                <div class="server-header">
                     <h3>Automation Server</h3>
-                    <p>Server is required for typing, clicking, opening apps.</p>
-                    <div class="server-steps">
-                        <div class="step"><span class="step-num">1</span> Install Python from <a href="https://www.python.org/downloads/" target="_blank">python.org</a></div>
-                        <div class="step"><span class="step-num">2</span> Run <code>install.bat</code> (one time only)</div>
-                        <div class="step"><span class="step-num">3</span> Double-click <code>start_server.bat</code></div>
+                    <span id="server-badge" class="server-badge offline">Offline</span>
+                </div>
+                <p class="server-desc">Server is required for automation (typing, clicking, apps).</p>
+                
+                <div id="server-offline-panel">
+                    <button id="start-server-btn" class="btn primary full-width start-server-btn">
+                        Start Server
+                    </button>
+                    <div id="server-instructions" class="server-instructions" style="display:none;">
+                        <div class="instruction-box">
+                            <p>Copy this command and paste in Command Prompt:</p>
+                            <div class="command-box">
+                                <code id="server-command">cd /d "%USERPROFILE%\Downloads\SmartGuide AI" && start_server.bat</code>
+                                <button id="copy-command" class="btn-copy" title="Copy">Copy</button>
+                            </div>
+                            <p class="instruction-note">Or double-click <code>start_server.bat</code> in the folder</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="server-online-panel" style="display:none;">
+                    <div class="server-running-msg">
+                        Server is running! You can use automation.
                     </div>
                 </div>
             </div>

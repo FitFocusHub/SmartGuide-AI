@@ -283,59 +283,129 @@ kbd {
     border: 1px solid #1a4a7a;
 }
 
-.server-section h3 {
-    font-size: 13px;
-    color: #e94560;
+.server-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 6px;
 }
 
-.server-section p {
+.server-section h3 {
+    font-size: 13px;
+    color: #e94560;
+    margin: 0;
+}
+
+.server-badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.server-badge.online {
+    background: #00ff88;
+    color: #000;
+}
+
+.server-badge.offline {
+    background: #ff4444;
+    color: #fff;
+}
+
+.server-desc {
     font-size: 11px;
     color: #888;
     margin-bottom: 10px;
 }
 
-.server-steps {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+.start-server-btn {
+    background: #00ff88 !important;
+    color: #000 !important;
+    font-weight: bold !important;
+    padding: 12px !important;
+    font-size: 14px !important;
 }
 
-.step {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    color: #ccc;
+.start-server-btn:hover {
+    background: #00cc6a !important;
 }
 
-.step-num {
-    background: #e94560;
-    color: white;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: bold;
-    flex-shrink: 0;
+.server-instructions {
+    margin-top: 10px;
+    animation: fadeIn 0.3s ease;
 }
 
-.step code {
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.instruction-box {
     background: #1a1a2e;
-    padding: 2px 6px;
-    border-radius: 3px;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+.instruction-box p {
+    font-size: 11px;
+    color: #888;
+    margin-bottom: 8px;
+}
+
+.command-box {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #0a0a1a;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 6px 8px;
+    margin-bottom: 8px;
+}
+
+.command-box code {
+    flex: 1;
     font-size: 10px;
     color: #00ff88;
+    word-break: break-all;
 }
 
-.step a {
-    color: #e94560;
-    text-decoration: none;
+.btn-copy {
+    background: #e94560;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 10px;
+    cursor: pointer;
+    white-space: nowrap;
 }
 
-.step a:hover {
-    text-decoration: underline;
+.btn-copy:hover {
+    background: #ff6b81;
+}
+
+.instruction-note {
+    font-size: 10px !important;
+    color: #666 !important;
+    margin: 0 !important;
+}
+
+.instruction-note code {
+    color: #ffa500;
+    background: #16213e;
+    padding: 1px 4px;
+    border-radius: 2px;
+}
+
+.server-running-msg {
+    background: #003300;
+    border: 1px solid #00ff88;
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
+    color: #00ff88;
+    font-size: 12px;
+    font-weight: bold;
 }

@@ -14,30 +14,64 @@ document.addEventListener("DOMContentLoaded", () => {
     const keyStatus = document.getElementById("key-status");
     const activeApi = document.getElementById("active-api");
     const serverStatus = document.getElementById("server-status");
+    const serverBadge = document.getElementById("server-badge");
+    const startServerBtn = document.getElementById("start-server-btn");
+    const serverInstructions = document.getElementById("server-instructions");
+    const serverOfflinePanel = document.getElementById("server-offline-panel");
+    const serverOnlinePanel = document.getElementById("server-online-panel");
+    const copyCommandBtn = document.getElementById("copy-command");
 
     chrome.storage.local.get(["enabled", "apiKey", "backupApiKey", "activeApi", "serverStatus"], (result) => {
         enableToggle.checked = result.enabled !== false;
         if (result.apiKey) apiKeyInput.value = result.apiKey;
         if (result.backupApiKey) backupKeyInput.value = result.backupApiKey;
         updateStatus(result.apiKey, result.backupApiKey, result.activeApi);
-        updateServerStatus(result.serverStatus);
+        updateServerUI(result.serverStatus);
     });
 
     chrome.storage.onChanged.addListener((changes) => {
         if (changes.serverStatus) {
-            updateServerStatus(changes.serverStatus.newValue);
+            updateServerUI(changes.serverStatus.newValue);
         }
     });
 
-    function updateServerStatus(status) {
-        if (status === "connected") {
+    function updateServerUI(status) {
+        const isOnline = status === "connected";
+        
+        if (isOnline) {
             serverStatus.textContent = "Online";
             serverStatus.style.color = "#00ff88";
+            serverBadge.textContent = "Online";
+            serverBadge.className = "server-badge online";
+            serverOfflinePanel.style.display = "none";
+            serverOnlinePanel.style.display = "block";
         } else {
             serverStatus.textContent = "Offline";
             serverStatus.style.color = "#ff4444";
+            serverBadge.textContent = "Offline";
+            serverBadge.className = "server-badge offline";
+            serverOfflinePanel.style.display = "block";
+            serverOnlinePanel.style.display = "none";
         }
     }
+
+    startServerBtn.addEventListener("click", () => {
+        if (serverInstructions.style.display === "none") {
+            serverInstructions.style.display = "block";
+            startServerBtn.textContent = "Hide Instructions";
+        } else {
+            serverInstructions.style.display = "none";
+            startServerBtn.textContent = "Start Server";
+        }
+    });
+
+    copyCommandBtn.addEventListener("click", () => {
+        const cmd = document.getElementById("server-command").textContent;
+        navigator.clipboard.writeText(cmd).then(() => {
+            copyCommandBtn.textContent = "Copied!";
+            setTimeout(() => { copyCommandBtn.textContent = "Copy"; }, 2000);
+        });
+    });
 
     enableToggle.addEventListener("change", () => {
         chrome.storage.local.set({ enabled: enableToggle.checked });
