@@ -13,13 +13,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const toggleVisibilityBackupBtn = document.getElementById("toggle-visibility-backup");
     const keyStatus = document.getElementById("key-status");
     const activeApi = document.getElementById("active-api");
+    const serverStatus = document.getElementById("server-status");
 
-    chrome.storage.local.get(["enabled", "apiKey", "backupApiKey", "activeApi"], (result) => {
+    chrome.storage.local.get(["enabled", "apiKey", "backupApiKey", "activeApi", "serverStatus"], (result) => {
         enableToggle.checked = result.enabled !== false;
         if (result.apiKey) apiKeyInput.value = result.apiKey;
         if (result.backupApiKey) backupKeyInput.value = result.backupApiKey;
         updateStatus(result.apiKey, result.backupApiKey, result.activeApi);
+        updateServerStatus(result.serverStatus);
     });
+
+    chrome.storage.onChanged.addListener((changes) => {
+        if (changes.serverStatus) {
+            updateServerStatus(changes.serverStatus.newValue);
+        }
+    });
+
+    function updateServerStatus(status) {
+        if (status === "connected") {
+            serverStatus.textContent = "Online";
+            serverStatus.style.color = "#00ff88";
+        } else {
+            serverStatus.textContent = "Offline";
+            serverStatus.style.color = "#ff4444";
+        }
+    }
 
     enableToggle.addEventListener("change", () => {
         chrome.storage.local.set({ enabled: enableToggle.checked });

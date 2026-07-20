@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/SmartGuide-AI-Ultimate-E94560?style=for-the-badge&logo=robot&logoColor=white" alt="SmartGuide AI"/>
   <img src="https://img.shields.io/badge/Platform-Chrome%20%2B%20Python-4285F4?style=for-the-badge" alt="Platform"/>
-  <img src="https://img.shields.io/badge/Language-English_%2B_Hindi-FF6B6B?style=for-the-badge" alt="Language"/>
+  <img src="https://img.shields.io/badge/Language-English-FF6B6B?style=for-the-badge" alt="Language"/>
 </p>
 
 <h1 align="center">SmartGuide AI Ultimate</h1>
@@ -13,16 +13,49 @@
 
 ---
 
-## What is SmartGuide AI Ultimate?
+## Quick Start (2 Minutes)
 
-SmartGuide AI Ultimate is a Chrome extension + Python automation server that understands your screen, remembers context, and can automate tasks on any website or desktop application.
+### Step 1: Install Python
+Download and install Python from [python.org](https://www.python.org/downloads/)
+**IMPORTANT:** Check "Add Python to PATH" during installation!
+
+### Step 2: Download & Install
+1. Download this repository
+2. Extract the zip file
+3. Double-click `install.bat` (one time setup)
+
+### Step 3: Start Server
+Double-click `start_server.bat` (or use Desktop shortcut after install)
+
+### Step 4: Load Extension in Chrome
+1. Open Chrome, go to `chrome://extensions/`
+2. Enable **Developer mode** (top right)
+3. Click **Load unpacked**
+4. Select the `browser-extension` folder
+
+### Step 5: Add API Keys
+1. Get free API key from [console.groq.com](https://console.groq.com)
+2. Click SmartGuide icon in Chrome toolbar
+3. Paste your API key
+4. Click Save
+
+### Step 6: Use It!
+1. Go to any website
+2. Click the purple chat bubble
+3. Ask anything!
+
+---
+
+## What is SmartGuide AI?
+
+SmartGuide AI is a Chrome extension + Python automation server that understands your screen, remembers context, and can automate tasks on any website or desktop application.
 
 **Features:**
-- Screen understanding - detects buttons, inputs, menus, etc.
+- Screen understanding - detects buttons, inputs, menus
 - Conversation memory - remembers previous interactions
 - Full automation - clicks, types, scrolls automatically
 - 50+ apps supported - YouTube, Chrome, VS Code, Word, Excel, etc.
-- English + Hindi responses
+- Website-specific shortcuts (ChatGPT, YouTube, Google, etc.)
 
 ---
 
@@ -36,55 +69,16 @@ SmartGuide AI Ultimate is a Chrome extension + Python automation server that und
 
 ---
 
-## Installation
+## How Server Works
 
-### Step 1: Install Python Dependencies
-1. Open Command Prompt
-2. Run: `pip install -r server/requirements.txt`
-3. Or run `setup.bat` for automatic setup
+The server runs on your PC and automates tasks:
+- **Tab navigation** works WITHOUT server (open/close/navigate tabs)
+- **Typing, clicking, apps** REQUIRE server to be running
 
-### Step 2: Get Free API Keys
-1. **Groq (Primary):** Go to [console.groq.com](https://console.groq.com), sign up free, create API key
-2. **BazaarLink (Backup):** Go to [bazaarlink.ai](https://bazaarlink.ai), sign up free, create API key
-
-### Step 3: Load Chrome Extension
-1. Open Chrome, go to `chrome://extensions/`
-2. Enable **Developer mode** (top right)
-3. Click **Load unpacked**
-4. Select the `browser-extension` folder
-
-### Step 4: Add API Keys
-1. Click SmartGuide AI icon in toolbar
-2. Enter Groq API key (Primary)
-3. Enter BazaarLink API key (Backup)
-4. Click **Save API Keys**
-
-### Step 5: Start Automation Server
-1. Open Command Prompt
-2. Navigate to server folder: `cd server`
-3. Run: `python server.py`
-4. Keep this window open
-
-### Step 6: Start Using
-1. Go to any website
-2. Click the purple chat bubble
-3. Ask your question
-4. AI will guide you or automate the task
-
----
-
-## Automation Features
-
-When server is running, AI can:
-- Click buttons automatically
-- Type text
-- Press keyboard shortcuts
-- Scroll pages
-- Open/close applications
-- Manage windows
-- Read clipboard
-- Take screenshots
-- And much more!
+To start server:
+- Double-click `start_server.bat`
+- OR use Desktop shortcut after install
+- Keep the window open while using SmartGuide
 
 ---
 
@@ -92,24 +86,24 @@ When server is running, AI can:
 
 - Python 3.8+
 - Chrome/Edge/Brave browser
-- Free Groq or BazaarLink API key
+- Free Groq API key
 - Internet connection
 
 ---
 
 ## Troubleshooting
 
-### "Server not connected" error
-- Make sure `python server.py` is running
-- Check if port 8765 is not blocked
+### "Server Offline" in extension
+- Double-click `start_server.bat` to start server
+- Keep the server window open
+
+### "No API Key" error
+- Get free key from [console.groq.com](https://console.groq.com)
+- Add it in extension popup
 
 ### Extension not loading
 - Make sure Developer mode is ON
 - Try extracting the zip file again
-
-### AI not responding
-- Check your API keys are valid
-- Check internet connection
 
 ---
 
