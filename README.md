@@ -13,72 +13,55 @@
 
 ---
 
-## Quick Start (2 Minutes)
+## Installation
 
-### Step 1: Install Python
-Download and install Python from [python.org](https://www.python.org/downloads/)
-**IMPORTANT:** Check "Add Python to PATH" during installation!
+### Option 1: pip install (Recommended)
 
-### Step 2: Download & Install
-1. Download this repository
-2. Extract the zip file
-3. Double-click `install.bat` (one time setup)
+```bash
+pip install smartguide-ai
+smartguide-server
+```
 
-### Step 3: Start Server
-Double-click `start_server.bat` (or use Desktop shortcut after install)
+### Option 2: Download & Install
 
-### Step 4: Load Extension in Chrome
-1. Open Chrome, go to `chrome://extensions/`
-2. Enable **Developer mode** (top right)
-3. Click **Load unpacked**
-4. Select the `browser-extension` folder
+1. Download: [SmartGuideAI-Setup.exe](https://github.com/FitFocusHub/SmartGuide-AI/releases)
+2. Run the installer
+3. Server starts automatically!
 
-### Step 5: Add API Keys
-1. Get free API key from [console.groq.com](https://console.groq.com)
-2. Click SmartGuide icon in Chrome toolbar
-3. Paste your API key
-4. Click Save
+### Option 3: Manual Setup
 
-### Step 6: Use It!
-1. Go to any website
-2. Click the purple chat bubble
-3. Ask anything!
+1. Clone repo: `git clone https://github.com/FitFocusHub/SmartGuide-AI.git`
+2. Install: `pip install -r server/requirements.txt`
+3. Run: `python server/server.py`
 
 ---
 
-## What is SmartGuide AI?
+## Browser Extension Setup
 
-SmartGuide AI is a Chrome extension + Python automation server that understands your screen, remembers context, and can automate tasks on any website or desktop application.
+1. Open Chrome → `chrome://extensions/`
+2. Enable **Developer mode**
+3. Click **Load unpacked**
+4. Select `browser-extension` folder
+5. Get free API key from [console.groq.com](https://console.groq.com)
+6. Click SmartGuide icon → Paste API key → Save
 
-**Features:**
+---
+
+## How It Works
+
+- **Tab navigation** works WITHOUT server
+- **Typing, clicking, apps** REQUIRE server
+- Server runs on `ws://127.0.0.1:8765`
+
+---
+
+## Features
+
 - Screen understanding - detects buttons, inputs, menus
 - Conversation memory - remembers previous interactions
 - Full automation - clicks, types, scrolls automatically
-- 50+ apps supported - YouTube, Chrome, VS Code, Word, Excel, etc.
-- Website-specific shortcuts (ChatGPT, YouTube, Google, etc.)
-
----
-
-## Download
-
-<p align="center">
-  <a href="https://github.com/FitFocusHub/SmartGuide-AI/archive/refs/heads/master.zip">
-    <img src="https://img.shields.io/badge/Download_Latest_Code-Master-blue?style=for-the-badge&logo=github&logoColor=white" alt="Download Latest"/>
-  </a>
-</p>
-
----
-
-## How Server Works
-
-The server runs on your PC and automates tasks:
-- **Tab navigation** works WITHOUT server (open/close/navigate tabs)
-- **Typing, clicking, apps** REQUIRE server to be running
-
-To start server:
-- Double-click `start_server.bat`
-- OR use Desktop shortcut after install
-- Keep the window open while using SmartGuide
+- 50+ apps supported
+- Website-specific shortcuts
 
 ---
 
@@ -87,23 +70,6 @@ To start server:
 - Python 3.8+
 - Chrome/Edge/Brave browser
 - Free Groq API key
-- Internet connection
-
----
-
-## Troubleshooting
-
-### "Server Offline" in extension
-- Double-click `start_server.bat` to start server
-- Keep the server window open
-
-### "No API Key" error
-- Get free key from [console.groq.com](https://console.groq.com)
-- Add it in extension popup
-
-### Extension not loading
-- Make sure Developer mode is ON
-- Try extracting the zip file again
 
 ---
 
