@@ -3,7 +3,7 @@
  * Copyright (c) 2026 FitFocusHub. All Rights Reserved.
  * Unauthorized copying, modification, or distribution is strictly prohibited.
  */
-console.log("[SmartGuide] v2.1 loaded - with memory");
+console.log("[SmartGuide] v1.0 loaded - with memory");
 const _0x5c8d = "SG-FH-2026-X7K9";
 
 window.smartGuideChat = {

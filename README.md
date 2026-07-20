@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/SmartGuide-AI-Ultimate-E94560?style=for-the-badge&logo=robot&logoColor=white" alt="SmartGuide AI"/>
+  <img src="https://img.shields.io/badge/SmartGuide-AI-v1.0-E94560?style=for-the-badge&logo=robot&logoColor=white" alt="SmartGuide AI"/>
   <img src="https://img.shields.io/badge/Platform-Chrome%20%2B%20Python-4285F4?style=for-the-badge" alt="Platform"/>
-  <img src="https://img.shields.io/badge/Language-English-FF6B6B?style=for-the-badge" alt="Language"/>
+  <img src="https://img.shields.io/badge/Windows-Installer-0078D4?style=for-the-badge" alt="Windows"/>
 </p>
 
-<h1 align="center">SmartGuide AI Ultimate</h1>
+<h1 align="center">SmartGuide AI v1.0</h1>
 
 <p align="center">
   <b>Advanced AI Navigation, Automation, Desktop & Browser Assistant</b><br>
@@ -15,24 +15,28 @@
 
 ## Installation
 
-### Option 1: pip install (Recommended)
+### Option 1: .exe Installer (Recommended)
+
+1. Download `SmartGuideAI-Setup.exe` from [Releases](https://github.com/FitFocusHub/SmartGuide-AI/releases)
+2. Run the installer
+3. Follow the wizard
+4. Server starts automatically!
+
+### Option 2: pip install
 
 ```bash
 pip install smartguide-ai
 smartguide-server
 ```
 
-### Option 2: Download & Install
+### Option 3: Manual
 
-1. Download: [SmartGuideAI-Setup.exe](https://github.com/FitFocusHub/SmartGuide-AI/releases)
-2. Run the installer
-3. Server starts automatically!
-
-### Option 3: Manual Setup
-
-1. Clone repo: `git clone https://github.com/FitFocusHub/SmartGuide-AI.git`
-2. Install: `pip install -r server/requirements.txt`
-3. Run: `python server/server.py`
+```bash
+git clone https://github.com/FitFocusHub/SmartGuide-AI.git
+cd SmartGuide-AI
+pip install -r server/requirements.txt
+python server/server.py
+```
 
 ---
 
@@ -47,21 +51,13 @@ smartguide-server
 
 ---
 
-## How It Works
-
-- **Tab navigation** works WITHOUT server
-- **Typing, clicking, apps** REQUIRE server
-- Server runs on `ws://127.0.0.1:8765`
-
----
-
 ## Features
 
 - Screen understanding - detects buttons, inputs, menus
 - Conversation memory - remembers previous interactions
 - Full automation - clicks, types, scrolls automatically
 - 50+ apps supported
-- Website-specific shortcuts
+- Website-specific shortcuts (ChatGPT, YouTube, etc.)
 
 ---
 
