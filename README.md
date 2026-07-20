@@ -17,10 +17,11 @@
 
 ### Download & Install
 
-1. Download `SmartGuideAI-Setup.exe` from this folder (`installer/installer_output/`)
-2. Run the installer
-3. Follow the wizard
-4. Server starts automatically!
+**[Download SmartGuideAI-Setup.exe](https://github.com/FitFocusHub/SmartGuide-AI/releases/download/v1/SmartGuideAI-Setup.exe)** (~2 MB)
+
+1. Run the installer
+2. Follow the wizard
+3. Server starts automatically!
 
 ---
 
