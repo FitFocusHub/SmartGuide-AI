@@ -20,19 +20,39 @@ window.smartGuideChat = {
         this.bindEvents();
         this.checkApiKey();
         this.startAdTimer();
+        this.listenServerStatus();
     },
 
     async checkApiKey() {
         try {
-            const result = await chrome.storage.local.get(["apiKey", "backupApiKey"]);
-            if (result.apiKey || result.backupApiKey) {
-                this.showStatus("Ready", "#00ff88");
-            } else {
+            const result = await chrome.storage.local.get(["apiKey", "backupApiKey", "serverStatus"]);
+            const hasApi = result.apiKey || result.backupApiKey;
+            const serverOk = result.serverStatus === "connected";
+            
+            if (!hasApi) {
                 this.showStatus("No API Key", "#ff4444");
+            } else if (!serverOk) {
+                this.showStatus("Server Offline", "#ffaa00");
+            } else {
+                this.showStatus("Ready", "#00ff88");
             }
         } catch (e) {
             this.showStatus("Ready", "#00ff88");
         }
+    },
+
+    listenServerStatus() {
+        chrome.storage.onChanged.addListener((changes) => {
+            if (changes.serverStatus) {
+                const status = changes.serverStatus.newValue;
+                if (status === "connected") {
+                    this.showStatus("Ready", "#00ff88");
+                } else {
+                    const hasKey = document.getElementById("sg-status")?.textContent !== "No API Key";
+                    if (hasKey) this.showStatus("Server Offline", "#ffaa00");
+                }
+            }
+        });
     },
 
     showStatus(text, color) {
@@ -137,7 +157,7 @@ window.smartGuideChat = {
                     <div class="sg-welcome" id="sg-welcome">
                         <div class="sg-welcome-icon">🤖</div>
                         <div class="sg-welcome-text">Welcome to <span class="sg-welcome-brand">SmartGuide AI</span></div>
-                        <div class="sg-welcome-sub">Main aapki help karunga. Kuch bhi puchin!</div>
+                        <div class="sg-welcome-sub">Ask me anything. I am here to help!</div>
                     </div>
                 </div>
                 <div class="sg-input-area">
@@ -180,7 +200,7 @@ window.smartGuideChat = {
             this.messagesContainer.innerHTML = `
                 <div class="sg-msg sg-msg-system">
                     <div class="sg-msg-content">
-                        Memory cleared! Naya conversation start karo.
+                        Memory cleared! Start a new conversation.
                     </div>
                 </div>
             `;
@@ -190,33 +210,191 @@ window.smartGuideChat = {
     showHelp() {
         const help = `
 <b>SmartGuide AI - Commands</b><br><br>
-<b>/help</b> - Ye help message dikhata hai<br>
-<b>/shortcuts</b> - Browser shortcuts dikhata hai<br>
-<b>/keys</b> - Saari keyboard keys dikhata hai<br><br>
-<b>Kaise Use Karein:</b><br>
-- Sawal type karo normally<br>
-- "YouTube kholo" - YouTube open karega<br>
-- "Google pe search karo" - Search karega<br>
-- "Subscribe kaise karu" - Step by step batayega<br>
-- "Copy karo" - Copy karega<br>
-- "Naya tab kholo" - Naya tab khulega<br><br>
-<b>Ye bhi bol sakte ho:</b><br>
-- "Back jao" / "Forward jao"<br>
-- "Reload karo" / "Page refresh karo"<br>
-- "Tab band karo"<br>
-- "Amazon jao" / "Facebook kholo"<br>
-- "Form fill karo"<br>
-- "Download karo"
+<b>/help</b> - Show this help message<br>
+<b>/shortcuts</b> - Show shortcuts for current website<br>
+<b>/keys</b> - Show all keyboard keys<br><br>
+<b>How to Use:</b><br>
+- Type your question normally<br>
+- "Open YouTube" - Opens YouTube<br>
+- "Search on Google" - Performs search<br>
+- "How to subscribe" - Step by step guide<br>
+- "Copy this" - Copies selected text<br>
+- "New tab" - Opens new tab<br><br>
+<b>You can also say:</b><br>
+- "Go back" / "Go forward"<br>
+- "Reload" / "Refresh page"<br>
+- "Close tab"<br>
+- "Go to Amazon" / "Open Facebook"<br>
+- "Fill the form"<br>
+- "Download"
         `;
         this.addMessage(help, "ai");
     },
 
-    showShortcuts() {
-        const shortcuts = `
+    async showShortcuts() {
+        let siteName = "Browser";
+        try {
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            if (tab && tab.url) {
+                const url = tab.url.toLowerCase();
+                if (url.includes("chatgpt")) siteName = "ChatGPT";
+                else if (url.includes("youtube")) siteName = "YouTube";
+                else if (url.includes("google")) siteName = "Google";
+                else if (url.includes("facebook")) siteName = "Facebook";
+                else if (url.includes("twitter") || url.includes("x.com")) siteName = "Twitter/X";
+                else if (url.includes("instagram")) siteName = "Instagram";
+                else if (url.includes("amazon")) siteName = "Amazon";
+                else if (url.includes("github")) siteName = "GitHub";
+                else if (url.includes("stackoverflow")) siteName = "Stack Overflow";
+                else if (url.includes("linkedin")) siteName = "LinkedIn";
+                else if (url.includes("reddit")) siteName = "Reddit";
+                else if (url.includes("netflix")) siteName = "Netflix";
+                else if (url.includes("spotify")) siteName = "Spotify";
+                else siteName = "Browser";
+            }
+        } catch(e) {}
+
+        let shortcuts = "";
+
+        if (siteName === "ChatGPT") {
+            shortcuts = `
+<b>ChatGPT Shortcuts:</b><br><br>
+- Ctrl+Shift+O - New chat<br>
+- Ctrl+Shift+S - Toggle sidebar<br>
+- / - Focus message input<br>
+- Ctrl+Shift+C - Copy code block<br>
+- Ctrl+Shift+M - Toggle model picker<br>
+- Ctrl+Enter - Send without thinking<br>
+- Shift+Enter - New line in message<br>
+- Ctrl+Shift+R - Regenerate response<br>
+- Ctrl+L - New chat<br>
+- Ctrl+Shift+H - Toggle history<br>
+- Escape - Stop generating<br>
+- Ctrl+Shift+P - Pin chat
+            `;
+        } else if (siteName === "YouTube") {
+            shortcuts = `
+<b>YouTube Shortcuts:</b><br><br>
+- K - Play/Pause<br>
+- J - Back 10s<br>
+- L - Forward 10s<br>
+- M - Mute/Unmute<br>
+- F - Fullscreen<br>
+- T - Theater mode<br>
+- I - Miniplayer<br>
+- 0-9 - Jump to 0%-90%<br>
+- / - Focus search<br>
+- Shift+N - Next video<br>
+- Shift+P - Previous video<br>
+- > - Speed up<br>
+- < - Slow down<br>
+- C - Toggle captions<br>
+- B - Toggle subtitles<br>
+- Z - Toggle zoom<br>
+- End - Go to end<br>
+- Home - Go to beginning<br>
+- Ctrl+Left - Previous frame<br>
+- Ctrl+Right - Next frame
+            `;
+        } else if (siteName === "Google") {
+            shortcuts = `
+<b>Google Search Shortcuts:</b><br><br>
+- / or Ctrl+K - Focus search<br>
+- Tab - Move to first result<br>
+- Arrow keys - Navigate results<br>
+- Enter - Open result<br>
+- Ctrl+Enter - Open in new tab<br>
+- Escape - Close suggestions<br>
+- Ctrl+L - Address bar<br>
+- Ctrl+Shift+L - Clear search<br>
+- G then I - Google Images<br>
+- G then M - Google Maps<br>
+- G then N - Google News
+            `;
+        } else if (siteName === "Facebook") {
+            shortcuts = `
+<b>Facebook Shortcuts:</b><br><br>
+- Alt+1 - Home<br>
+- Alt+2 - Timeline<br>
+- Alt+3 - Friends<br>
+- Alt+4 - Messages<br>
+- Alt+5 - Notifications<br>
+- Alt+6 - Settings<br>
+- Alt+7 - Activity Log<br>
+- Alt+8 - About<br>
+- Alt+9 - Terms<br>
+- Alt+0 - Help<br>
+- / - Search
+            `;
+        } else if (siteName === "Twitter/X") {
+            shortcuts = `
+<b>Twitter/X Shortcuts:</b><br><br>
+- N - New tweet<br>
+- Enter - Send tweet<br>
+- Ctrl+Enter - Send without confirm<br>
+- / or Q - Focus search<br>
+- G then H - Home<br>
+- G then N - Notifications<br>
+- G then M - Messages<br>
+- G then P - Profile<br>
+- J/K - Next/Previous tweet<br>
+- L - Like<br>
+- R - Reply<br>
+- T - Retweet<br>
+- B - Bookmark<br>
+- Esc - Close compose
+            `;
+        } else if (siteName === "GitHub") {
+            shortcuts = `
+<b>GitHub Shortcuts:</b><br><br>
+- T - File finder<br>
+- S or / - Search<br>
+- G then N - Notifications<br>
+- G then C - Code<br>
+- G then I - Issues<br>
+- G then P - Pull requests<br>
+- G then B - Projects<br>
+- G then W - Wiki<br>
+- . - Open in editor<br>
+- L - Toggle line numbers<br>
+- Ctrl+Shift+C - Copy URL<br>
+- [ - Go back<br>
+- ] - Go forward
+            `;
+        } else if (siteName === "Stack Overflow") {
+            shortcuts = `
+<b>Stack Overflow Shortcuts:</b><br><br>
+- / - Focus search<br>
+- H - Home<br>
+- S - Questions<br>
+- T - Tags<br>
+- U - Users<br>
+- J/K - Next/Previous question<br>
+- L - Upvote<br>
+- D - Downvote<br>
+- Shift+F - Follow<br>
+- Ctrl+Enter - Submit answer
+            `;
+        } else if (siteName === "LinkedIn") {
+            shortcuts = `
+<b>LinkedIn Shortcuts:</b><br><br>
+- G then N - Notifications<br>
+- G then M - Messages<br>
+- G then H - Home feed<br>
+- G then J - Jobs<br>
+- G then C - Connections<br>
+- G then P - Profile<br>
+- G then S - Search<br>
+- N - New post<br>
+- Enter - Send message<br>
+- Esc - Close dialog
+            `;
+        } else {
+            shortcuts = `
 <b>Browser Shortcuts:</b><br><br>
 <b>Tab Management:</b><br>
-- Ctrl+T - Naya tab<br>
-- Ctrl+W - Tab band<br>
+- Ctrl+T - New tab<br>
+- Ctrl+W - Close tab<br>
 - Ctrl+Tab - Next tab<br>
 - Ctrl+Shift+Tab - Previous tab<br>
 - Ctrl+1-9 - Specific tab<br><br>
@@ -242,13 +420,14 @@ window.smartGuideChat = {
 <b>Search:</b><br>
 - Ctrl+K / Ctrl+E - Search bar<br>
 - / - YouTube search
-        `;
+            `;
+        }
         this.addMessage(shortcuts, "ai");
     },
 
     showKeys() {
         const keys = `
-<b>Saari Keyboard Keys:</b><br><br>
+<b>All Keyboard Keys:</b><br><br>
 <b>Letters:</b> A B C D E F G H I J K L M N O P Q R S T U V W X Y Z<br><br>
 <b>Numbers:</b> 0 1 2 3 4 5 6 7 8 9<br><br>
 <b>Special:</b> Enter, Space, Tab, Escape, Backspace, Delete, Insert<br><br>
@@ -257,8 +436,8 @@ window.smartGuideChat = {
 <b>Modifiers:</b> Ctrl, Alt, Shift, Windows/Cmd<br><br>
 <b>Media:</b> VolumeUp, VolumeDown, Mute, MediaPlayPause, MediaNextTrack, MediaPrevTrack<br><br>
 <b>Browser:</b> BrowserBack, BrowserForward, BrowserRefresh, BrowserHome, BrowserFavorites<br><br>
-<b>Kaise Use Karein:</b><br>
-Bolo: "Ctrl+C press karo" ya "Enter dabao" ya "F11 press karo"
+<b>How to Use:</b><br>
+Say: "Press Ctrl+C" or "Press Enter" or "Press F11"
         `;
         this.addMessage(keys, "ai");
     },

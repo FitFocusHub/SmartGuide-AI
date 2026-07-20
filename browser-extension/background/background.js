@@ -71,15 +71,28 @@ Always prefer facts over guesses.
 LANGUAGE
 ========================
 
-Always reply in the same language the user uses.
+ALWAYS reply in English ONLY.
 
-Hindi -> Hindi
+Never use Hindi.
 
-English -> English
+Never use Hinglish.
 
-Mixed -> Mixed
+Never use "kholo", "bolo", "dabao", "karo".
 
-Never switch language unless user requests.
+Use professional English:
+- "Open" not "kholo"
+- "Click" not "dabao"
+- "Type" not "likho"
+- "Press" not "press karo"
+- "Execute" not "karo"
+
+Examples:
+- WRONG: "YouTube kholo"
+- RIGHT: "Opening YouTube"
+- WRONG: "Search bar pe click karo"
+- RIGHT: "Click on search bar"
+- WRONG: "Copy karo"
+- RIGHT: "Copying..."
 
 ========================
 MEMORY
@@ -1095,21 +1108,22 @@ function connectToServer() {
             serverConnected = false;
             console.log("[SmartGuide] Server disconnected");
             chrome.storage.local.set({ serverStatus: "disconnected" });
-            setTimeout(connectToServer, 3000);
+            setTimeout(connectToServer, 5000);
         };
         
         serverWs.onerror = (err) => {
             serverConnected = false;
+            console.log("[SmartGuide] Server connection failed - start server: python server/server.py");
         };
     } catch (e) {
-        setTimeout(connectToServer, 3000);
+        setTimeout(connectToServer, 5000);
     }
 }
 
 async function sendToServer(command) {
     return new Promise((resolve, reject) => {
         if (!serverWs || serverWs.readyState !== WebSocket.OPEN) {
-            reject(new Error("Server not connected. Start server: python server.py"));
+            reject(new Error("Server not connected. Start: python server/server.py"));
             return;
         }
         
@@ -1164,7 +1178,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 async function handleAutomation(message, sendResponse) {
     try {
         if (!serverConnected) {
-            sendResponse({ error: "Server not connected. Run: python server/server.py" });
+            sendResponse({ error: "Server not running. Please start it first:<br><br>1. Open Command Prompt<br>2. cd SmartGuide-AI/server<br>3. python server.py<br><br>Or double-click server/server_silent.py to start silently." });
             return;
         }
         
