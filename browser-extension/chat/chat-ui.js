@@ -134,11 +134,10 @@ window.smartGuideChat = {
                     </div>
                 </div>
                 <div class="sg-messages" id="sg-messages">
-                    <div class="sg-msg sg-msg-system">
-                        <div class="sg-msg-content">
-                            Namaste! Main SmartGuide AI hoon.
-                            <br><small>Kuch bhi puchin ya karne ko bolin</small>
-                        </div>
+                    <div class="sg-welcome" id="sg-welcome">
+                        <div class="sg-welcome-icon">🤖</div>
+                        <div class="sg-welcome-text">Welcome to <span class="sg-welcome-brand">SmartGuide AI</span></div>
+                        <div class="sg-welcome-sub">Main aapki help karunga. Kuch bhi puchin!</div>
                     </div>
                 </div>
                 <div class="sg-input-area">
@@ -188,9 +187,109 @@ window.smartGuideChat = {
         });
     },
 
+    showHelp() {
+        const help = `
+<b>SmartGuide AI - Commands</b><br><br>
+<b>/help</b> - Ye help message dikhata hai<br>
+<b>/shortcuts</b> - Browser shortcuts dikhata hai<br>
+<b>/keys</b> - Saari keyboard keys dikhata hai<br><br>
+<b>Kaise Use Karein:</b><br>
+- Sawal type karo normally<br>
+- "YouTube kholo" - YouTube open karega<br>
+- "Google pe search karo" - Search karega<br>
+- "Subscribe kaise karu" - Step by step batayega<br>
+- "Copy karo" - Copy karega<br>
+- "Naya tab kholo" - Naya tab khulega<br><br>
+<b>Ye bhi bol sakte ho:</b><br>
+- "Back jao" / "Forward jao"<br>
+- "Reload karo" / "Page refresh karo"<br>
+- "Tab band karo"<br>
+- "Amazon jao" / "Facebook kholo"<br>
+- "Form fill karo"<br>
+- "Download karo"
+        `;
+        this.addMessage(help, "ai");
+    },
+
+    showShortcuts() {
+        const shortcuts = `
+<b>Browser Shortcuts:</b><br><br>
+<b>Tab Management:</b><br>
+- Ctrl+T - Naya tab<br>
+- Ctrl+W - Tab band<br>
+- Ctrl+Tab - Next tab<br>
+- Ctrl+Shift+Tab - Previous tab<br>
+- Ctrl+1-9 - Specific tab<br><br>
+<b>Navigation:</b><br>
+- Alt+Left - Back<br>
+- Alt+Right - Forward<br>
+- F5 / Ctrl+R - Reload<br>
+- Ctrl+Home - Page top<br>
+- Ctrl+End - Page bottom<br><br>
+<b>Actions:</b><br>
+- Ctrl+C - Copy<br>
+- Ctrl+V - Paste<br>
+- Ctrl+X - Cut<br>
+- Ctrl+Z - Undo<br>
+- Ctrl+A - Select all<br>
+- Ctrl+F - Find<br>
+- Ctrl+H - History<br>
+- Ctrl+J - Downloads<br>
+- Ctrl+L - Address bar<br>
+- Ctrl+D - Bookmark<br>
+- F11 - Fullscreen<br>
+- Ctrl+Shift+I - DevTools<br><br>
+<b>Search:</b><br>
+- Ctrl+K / Ctrl+E - Search bar<br>
+- / - YouTube search
+        `;
+        this.addMessage(shortcuts, "ai");
+    },
+
+    showKeys() {
+        const keys = `
+<b>Saari Keyboard Keys:</b><br><br>
+<b>Letters:</b> A B C D E F G H I J K L M N O P Q R S T U V W X Y Z<br><br>
+<b>Numbers:</b> 0 1 2 3 4 5 6 7 8 9<br><br>
+<b>Special:</b> Enter, Space, Tab, Escape, Backspace, Delete, Insert<br><br>
+<b>Arrow Keys:</b> Up, Down, Left, Right<br><br>
+<b>Function Keys:</b> F1-F12<br><br>
+<b>Modifiers:</b> Ctrl, Alt, Shift, Windows/Cmd<br><br>
+<b>Media:</b> VolumeUp, VolumeDown, Mute, MediaPlayPause, MediaNextTrack, MediaPrevTrack<br><br>
+<b>Browser:</b> BrowserBack, BrowserForward, BrowserRefresh, BrowserHome, BrowserFavorites<br><br>
+<b>Kaise Use Karein:</b><br>
+Bolo: "Ctrl+C press karo" ya "Enter dabao" ya "F11 press karo"
+        `;
+        this.addMessage(keys, "ai");
+    },
+
     sendMessage() {
         const text = this.inputField.value.trim();
         if (!text) return;
+        
+        const welcome = document.getElementById("sg-welcome");
+        if (welcome) welcome.remove();
+        
+        if (text === "/help") {
+            this.addMessage(text, "user");
+            this.inputField.value = "";
+            this.showHelp();
+            return;
+        }
+        
+        if (text === "/shortcuts") {
+            this.addMessage(text, "user");
+            this.inputField.value = "";
+            this.showShortcuts();
+            return;
+        }
+        
+        if (text === "/keys") {
+            this.addMessage(text, "user");
+            this.inputField.value = "";
+            this.showKeys();
+            return;
+        }
         
         this.addMessage(text, "user");
         this.inputField.value = "";

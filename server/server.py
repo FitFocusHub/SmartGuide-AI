@@ -141,8 +141,70 @@ async def process_command(data):
     elif cmd == "locate_on_screen":
         return locate_on_screen(data)
 
+    elif cmd == "read_screen":
+        return read_screen(data)
+
+    elif cmd == "get_selected_text":
+        return get_selected_text()
+
     else:
         return {"error": f"Unknown command: {cmd}"}
+
+KEY_MAP = {
+    "enter": "enter", "return": "enter", "dabao": "enter",
+    "space": "space", "spacebar": "space",
+    "tab": "tab",
+    "escape": "escape", "esc": "escape",
+    "backspace": "backspace", "delete": "delete", "del": "delete",
+    "up": "up", "uparrow": "up", "uparrow": "up",
+    "down": "down", "downarrow": "down",
+    "left": "left", "leftarrow": "left",
+    "right": "right", "rightarrow": "right",
+    "home": "home", "end": "end",
+    "pageup": "pageup", "pagedown": "pagedown",
+    "f1": "f1", "f2": "f2", "f3": "f3", "f4": "f4",
+    "f5": "f5", "f6": "f6", "f7": "f7", "f8": "f8",
+    "f9": "f9", "f10": "f10", "f11": "f11", "f12": "f12",
+    "capslock": "capslock", "numlock": "numlock", "scrolllock": "scrolllock",
+    "insert": "insert", "printscreen": "printscreen",
+    "volumeup": "volumeup", "volumedown": "volumedown", "volumemute": "volumemute",
+    "playpause": "playpause", "mediaplaypause": "playpause",
+    "nexttrack": "nexttrack", "prevtrack": "prevtrack",
+    "browserback": "browserback", "browserforward": "browserforward",
+    "browserrefresh": "browserrefresh", "browserhome": "browserhome",
+}
+
+COPY_PASTE_MAP = {
+    "copy": ["ctrl", "c"],
+    "paste": ["ctrl", "v"],
+    "cut": ["ctrl", "x"],
+    "undo": ["ctrl", "z"],
+    "redo": ["ctrl", "y"],
+    "select all": ["ctrl", "a"],
+    "save": ["ctrl", "s"],
+    "print": ["ctrl", "p"],
+    "find": ["ctrl", "f"],
+    "replace": ["ctrl", "h"],
+    "new tab": ["ctrl", "t"],
+    "close tab": ["ctrl", "w"],
+    "new window": ["ctrl", "n"],
+    "reopen tab": ["ctrl", "shift", "t"],
+    "fullscreen": ["f11"],
+    "address bar": ["ctrl", "l"],
+    "bookmark": ["ctrl", "d"],
+    "history": ["ctrl", "h"],
+    "downloads": ["ctrl", "j"],
+    "devtools": ["f12"],
+    "zoom in": ["ctrl", "="],
+    "zoom out": ["ctrl", "-"],
+    "zoom reset": ["ctrl", "0"],
+    "refresh": ["f5"],
+    "reload": ["ctrl", "r"],
+    "back": ["alt", "left"],
+    "forward": ["alt", "right"],
+    "next tab": ["ctrl", "tab"],
+    "prev tab": ["ctrl", "shift", "tab"],
+}
 
 
 def handle_click(data):
@@ -174,9 +236,18 @@ def handle_type(data):
 
 
 def handle_press(data):
-    """Press a key."""
+    """Press a key with Hindi support."""
     try:
-        key = data.get("key", "")
+        key = data.get("key", "").lower().strip()
+        
+        if key in COPY_PASTE_MAP:
+            pyautogui.hotkey(*COPY_PASTE_MAP[key])
+            return {"status": "success", "action": "hotkey", "keys": COPY_PASTE_MAP[key]}
+        
+        if key in KEY_MAP:
+            pyautogui.press(KEY_MAP[key])
+            return {"status": "success", "action": "press", "key": KEY_MAP[key]}
+        
         pyautogui.press(key)
         return {"status": "success", "action": "press", "key": key}
     except Exception as e:
@@ -372,6 +443,50 @@ def handle_drag(data):
         pyautogui.moveTo(x1, y1)
         pyautogui.drag(x2 - x1, y2 - y1, duration=duration)
         return {"status": "success", "action": "drag"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def read_screen(data):
+    """Read text from screen using OCR."""
+    try:
+        try:
+            import easyocr
+            reader = easyocr.Reader(['en', 'hi'])
+            region = data.get("region")
+            if region:
+                screenshot = pyautogui.screenshot(region=tuple(region))
+            else:
+                screenshot = pyautogui.screenshot()
+            
+            import numpy as np
+            img_array = np.array(screenshot)
+            results = reader.readtext(img_array)
+            
+            texts = []
+            for (bbox, text, confidence) in results:
+                texts.append({
+                    "text": text,
+                    "confidence": round(confidence * 100),
+                    "x": int(bbox[0][0]),
+                    "y": int(bbox[0][1])
+                })
+            
+            return {"status": "success", "action": "read_screen", "texts": texts}
+        except ImportError:
+            clipboard_text = pyperclip.paste()
+            return {"status": "success", "action": "read_screen", "texts": [{"text": clipboard_text, "confidence": 100}], "note": "Install easyocr for better OCR: pip install easyocr"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def get_selected_text():
+    """Get currently selected text."""
+    try:
+        pyautogui.hotkey("ctrl", "c")
+        time.sleep(0.1)
+        text = pyperclip.paste()
+        return {"status": "success", "action": "get_selected_text", "text": text}
     except Exception as e:
         return {"error": str(e)}
 

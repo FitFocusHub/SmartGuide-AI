@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SmartGuide AI",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Advanced AI Navigation, Automation, Desktop and Browser Assistant",
   "author": "FitFocusHub",
   "homepage_url": "https://github.com/FitFocusHub/SmartGuide-AI",
@@ -9,7 +9,9 @@
     "activeTab",
     "storage",
     "scripting",
-    "tabs"
+    "tabs",
+    "clipboardRead",
+    "clipboardWrite"
   ],
   "host_permissions": [
     "<all_urls>"

@@ -408,3 +408,48 @@
 .sg-ad-close:hover {
     color: #fff;
 }
+
+@keyframes sgFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes sgPulse2 {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.sg-welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+    text-align: center;
+    animation: sgFadeIn 0.5s ease-out;
+}
+
+.sg-welcome-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    animation: sgPulse2 2s infinite;
+}
+
+.sg-welcome-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 8px;
+}
+
+.sg-welcome-brand {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+}
+
+.sg-welcome-sub {
+    font-size: 13px;
+    color: #888;
+}
