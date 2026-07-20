@@ -13,24 +13,33 @@
 
 ---
 
-## Installation
+## Quick Start
 
-### Option 1: .exe Installer (Recommended)
+### Download & Install
 
-1. Download `SmartGuideAI-Setup.exe` from [Releases](https://github.com/FitFocusHub/SmartGuide-AI/releases)
-2. Run the installer
-3. Follow the wizard
-4. Server starts automatically!
+**[Download SmartGuideAI-Setup.exe](https://github.com/FitFocusHub/SmartGuide-AI/releases/download/v1.0/SmartGuideAI-Setup.exe)** (~2 MB)
 
-### Option 2: pip install
+1. Run the installer
+2. Follow the wizard
+3. Server starts automatically!
 
+---
+
+## Full Documentation
+
+**[View Installation Guide with Copy Buttons](docs/index.html)**
+
+---
+
+## Alternative Installation
+
+### pip install
 ```bash
 pip install smartguide-ai
 smartguide-server
 ```
 
-### Option 3: Manual
-
+### Manual
 ```bash
 git clone https://github.com/FitFocusHub/SmartGuide-AI.git
 cd SmartGuide-AI
@@ -40,7 +49,7 @@ python server/server.py
 
 ---
 
-## Browser Extension Setup
+## Browser Extension
 
 1. Open Chrome → `chrome://extensions/`
 2. Enable **Developer mode**
