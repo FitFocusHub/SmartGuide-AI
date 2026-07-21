@@ -894,16 +894,26 @@ GO FORWARD:
 RELOAD PAGE:
 {"action": "reload"}
 
+EXECUTE JAVASCRIPT ON PAGE:
+{"action": "execute_script", "script": "document.title"}
+
+CLICK ELEMENT BY SELECTOR:
+{"action": "click_element", "selector": "button.submit"}
+
+TYPE TEXT IN INPUT:
+{"action": "type_text", "selector": "input[name='q']", "text": "hello"}
+
 When user says:
-- "naya tab kholo" -> open_tab
-- "Google kholo" -> navigate with google.com URL
-- "YouTube kholo" -> navigate with youtube.com URL
+- "open YouTube" -> navigate with youtube.com URL
 - "new tab" -> open_tab
 - "go to amazon" -> navigate with amazon.com URL
-- "page reload karo" -> reload
-- "back jao" -> go_back
-- "forward jao" -> go_forward
-- "band karo" -> close_tab
+- "reload page" -> reload
+- "go back" -> go_back
+- "go forward" -> go_forward
+- "close tab" -> close_tab
+- "click the search button" -> click_element with appropriate selector
+- "type in search box" -> type_text with selector and text
+- "get page title" -> execute_script with document.title
 
 NEVER say you cannot open tabs or navigate. You CAN. Use the execute array.
 
@@ -1269,6 +1279,67 @@ async function handleBrowserAction(message, sendResponse) {
                 if (tabs[0]) {
                     chrome.tabs.goForward(tabs[0].id, () => {
                         sendResponse({ status: "success", action: "go_forward" });
+                    });
+                }
+            });
+            return true;
+        }
+        
+        if (action === "execute_script") {
+            const script = message.script;
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                if (tabs[0]) {
+                    chrome.scripting.executeScript({
+                        target: { tabId: tabs[0].id },
+                        func: (code) => { return eval(code); },
+                        args: [script]
+                    }, (results) => {
+                        if (chrome.runtime.lastError) {
+                            sendResponse({ error: chrome.runtime.lastError.message });
+                        } else {
+                            sendResponse({ status: "success", action: "execute_script", result: results[0]?.result });
+                        }
+                    });
+                }
+            });
+            return true;
+        }
+        
+        if (action === "click_element") {
+            const selector = message.selector;
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                if (tabs[0]) {
+                    chrome.scripting.executeScript({
+                        target: { tabId: tabs[0].id },
+                        func: (sel) => {
+                            const el = document.querySelector(sel);
+                            if (el) { el.click(); return true; }
+                            return false;
+                        },
+                        args: [selector]
+                    }, (results) => {
+                        sendResponse({ status: "success", action: "click_element", found: results[0]?.result });
+                    });
+                }
+            });
+            return true;
+        }
+        
+        if (action === "type_text") {
+            const selector = message.selector;
+            const text = message.text;
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                if (tabs[0]) {
+                    chrome.scripting.executeScript({
+                        target: { tabId: tabs[0].id },
+                        func: (sel, txt) => {
+                            const el = document.querySelector(sel);
+                            if (el) { el.value = txt; el.dispatchEvent(new Event('input', { bubbles: true })); return true; }
+                            return false;
+                        },
+                        args: [selector, text]
+                    }, (results) => {
+                        sendResponse({ status: "success", action: "type_text", found: results[0]?.result });
                     });
                 }
             });

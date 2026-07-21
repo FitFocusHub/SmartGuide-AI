@@ -569,14 +569,19 @@ Say: "Press Ctrl+C" or "Press Enter" or "Press F11"
                 if (action.action === "open_tab" || action.action === "navigate" || 
                     action.action === "close_tab" || action.action === "switch_tab" ||
                     action.action === "go_back" || action.action === "go_forward" ||
-                    action.action === "reload" || action.action === "list_tabs") {
+                    action.action === "reload" || action.action === "list_tabs" ||
+                    action.action === "execute_script" || action.action === "click_element" ||
+                    action.action === "type_text") {
                     
                     const result = await new Promise((resolve, reject) => {
                         chrome.runtime.sendMessage({
                             type: "browser_action",
                             action: action.action,
                             url: action.url,
-                            tabId: action.tabId
+                            tabId: action.tabId,
+                            script: action.script,
+                            selector: action.selector,
+                            text: action.text
                         }, (response) => {
                             if (chrome.runtime.lastError) {
                                 reject(new Error(chrome.runtime.lastError.message));
