@@ -13,12 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const toggleVisibilityBackupBtn = document.getElementById("toggle-visibility-backup");
     const keyStatus = document.getElementById("key-status");
     const activeApi = document.getElementById("active-api");
-    const serverStatus = document.getElementById("server-status");
-    const serverBadge = document.getElementById("server-badge");
-    const startServerBtn = document.getElementById("start-server-btn");
-    const serverInstructions = document.getElementById("server-instructions");
-    const serverOfflinePanel = document.getElementById("server-offline-panel");
-    const serverOnlinePanel = document.getElementById("server-online-panel");
     const serverStatusBox = document.getElementById("server-status-box");
     const serverStatusIcon = document.getElementById("server-status-icon");
     const serverStatusTitle = document.getElementById("server-status-title");
@@ -45,28 +39,14 @@ document.addEventListener("DOMContentLoaded", () => {
             serverStatusBox.className = "server-status-box connected";
             serverStatusIcon.textContent = "\u2713";
             serverStatusTitle.textContent = "Server Connected";
-            serverStatusDesc.textContent = "Automation ready - typing, clicking, apps work!";
-            serverOfflinePanel.style.display = "none";
-            serverOnlinePanel.style.display = "block";
+            serverStatusDesc.textContent = "Automation ready";
         } else {
             serverStatusBox.className = "server-status-box disconnected";
             serverStatusIcon.textContent = "X";
             serverStatusTitle.textContent = "Server Disconnected";
-            serverStatusDesc.textContent = "Start server for automation";
-            serverOfflinePanel.style.display = "block";
-            serverOnlinePanel.style.display = "none";
+            serverStatusDesc.textContent = "Run Server.exe to start";
         }
     }
-
-    startServerBtn.addEventListener("click", () => {
-        if (serverInstructions.style.display === "none") {
-            serverInstructions.style.display = "block";
-            startServerBtn.textContent = "Hide Instructions";
-        } else {
-            serverInstructions.style.display = "none";
-            startServerBtn.textContent = "Start Server";
-        }
-    });
 
     enableToggle.addEventListener("change", () => {
         chrome.storage.local.set({ enabled: enableToggle.checked });
@@ -112,12 +92,10 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // API key exists - check if internet works
         fetch("https://api.groq.com/openai/v1/models", {
             method: "HEAD",
             mode: "no-cors"
         }).then(() => {
-            // Internet OK
             statusIndicator.className = "status connected";
             statusText.textContent = "Ready";
             keyStatus.textContent = "Set";
@@ -127,14 +105,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 activeApi.textContent = "Groq";
                 activeApi.style.color = "#00ff88";
             } else if (active === "bazaarlink") {
-                activeApi.textContent = "BazaarLink (Fallback)";
+                activeApi.textContent = "BazaarLink";
                 activeApi.style.color = "#ffa500";
             } else {
                 activeApi.textContent = key ? "Groq" : (backupKey ? "BazaarLink" : "None");
                 activeApi.style.color = "#888";
             }
         }).catch(() => {
-            // No internet
             statusIndicator.className = "status disconnected";
             statusText.textContent = "No Internet";
             keyStatus.textContent = "Set (No Net)";

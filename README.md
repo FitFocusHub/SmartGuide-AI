@@ -1,83 +1,64 @@
 <p align="center">
   <img src="https://img.shields.io/badge/SmartGuide-AI-v1.0-E94560?style=for-the-badge&logo=robot&logoColor=white" alt="SmartGuide AI"/>
-  <img src="https://img.shields.io/badge/Platform-Chrome%20%2B%20Python-4285F4?style=for-the-badge" alt="Platform"/>
-  <img src="https://img.shields.io/badge/Windows-Installer-0078D4?style=for-the-badge" alt="Windows"/>
 </p>
 
 <h1 align="center">SmartGuide AI v1.0</h1>
 
 <p align="center">
-  <b>Advanced AI Navigation, Automation, Desktop & Browser Assistant</b><br>
-  Understands, explains, guides and automates everything on your computer.
+  <b>AI-Powered Browser Automation Assistant</b>
 </p>
 
 ---
 
-## Quick Start
+## Installation (4 Steps)
 
-### Download & Install
+### Step 1: Download
+Download the ZIP file from this repository.
 
-**[Download SmartGuideAI-Setup.exe](https://github.com/FitFocusHub/SmartGuide-AI/releases/download/v1/SmartGuideAI-Setup.exe)** (~2 MB)
+### Step 2: Extract
+Extract the ZIP file to any folder.
 
-1. Run the installer
-2. Follow the wizard
-3. Server starts automatically!
+### Step 3: Install
+Run `Server.exe` and follow the wizard.
 
----
+### Step 4: Load Extension
+1. Open Chrome
+2. Go to `chrome://extensions/`
+3. Enable **Developer mode**
+4. Click **Load unpacked**
+5. Select the `browser-extension` folder
 
-## Full Documentation
-
-**[View Installation Guide with Copy Buttons](docs/index.html)**
-
----
-
-## Alternative Installation
-
-### pip install
-```bash
-pip install smartguide-ai
-smartguide-server
-```
-
-### Manual
-```bash
-git clone https://github.com/FitFocusHub/SmartGuide-AI.git
-cd SmartGuide-AI
-pip install -r server/requirements.txt
-python server/server.py
-```
+**Done!** Server starts automatically in background.
 
 ---
 
-## Browser Extension
+## How to Use
 
-1. Open Chrome → `chrome://extensions/`
-2. Enable **Developer mode**
-3. Click **Load unpacked**
-4. Select `browser-extension` folder
-5. Get free API key from [console.groq.com](https://console.groq.com)
-6. Click SmartGuide icon → Paste API key → Save
+1. Go to any website
+2. Click the purple SmartGuide icon
+3. Ask your question
+4. AI will guide you or automate the task
 
 ---
 
 ## Features
 
-- Screen understanding - detects buttons, inputs, menus
-- Conversation memory - remembers previous interactions
-- Full automation - clicks, types, scrolls automatically
-- 50+ apps supported
-- Website-specific shortcuts (ChatGPT, YouTube, etc.)
+- AI-powered guidance
+- Automatic automation
+- Keyboard shortcuts
+- Website-specific help
 
 ---
 
 ## Requirements
 
-- Python 3.8+
-- Chrome/Edge/Brave browser
+- Windows 10/11
+- Python 3.8+ (auto-installed)
+- Chrome/Edge browser
 - Free Groq API key
 
 ---
 
 ## License
 
-**Proprietary** - Copyright (c) 2026 FitFocusHub. All Rights Reserved.
+Copyright (c) 2026 FitFocusHub. All Rights Reserved.

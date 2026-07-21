@@ -1,10 +1,9 @@
 """
-SmartGuide AI - Silent Background Server
+SmartGuide AI - Silent Server
 Copyright (c) 2026 FitFocusHub. All Rights Reserved.
 
-This server runs silently in the background.
-No console window visible to user.
-Starts automatically with Windows.
+Runs as a background service without showing terminal window.
+Auto-starts with Windows.
 """
 
 import asyncio
@@ -13,372 +12,198 @@ import sys
 import os
 import subprocess
 import time
-import ctypes
-import winreg
+import logging
 from pathlib import Path
 
-# Hide console window
-def hide_console():
-    try:
-        hwnd = ctypes.windll.kernel32.GetConsoleWindow()
-        if hwnd:
-            ctypes.windll.user32.ShowWindow(hwnd, 0)  # SW_HIDE
-    except:
-        pass
+# Hide console window on Windows
+if sys.platform == "win32":
+    import ctypes
+    kernel32 = ctypes.windll.kernel32
+    kernel32.FreeConsole()
 
-hide_console()
+# Setup logging
+log_dir = Path(os.environ.get("APPDATA", "")) / "SmartGuide AI" / "logs"
+log_dir.mkdir(parents=True, exist_ok=True)
+log_file = log_dir / "server.log"
 
-try:
-    import websockets
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "websockets", "-q"])
-    import websockets
+logging.basicConfig(
+    filename=str(log_file),
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger("SmartGuide")
 
-try:
-    import pyautogui
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "pyautogui", "-q"])
-    import pyautogui
+# Install dependencies if missing
+def install_deps():
+    deps = ["websockets", "pyautogui", "pyperclip", "psutil", "Pillow"]
+    for dep in deps:
+        try:
+            __import__(dep.lower().replace("-", "_"))
+        except ImportError:
+            logger.info(f"Installing {dep}...")
+            subprocess.check_call(
+                [sys.executable, "-m", "pip", "install", dep],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
 
-try:
-    import pyperclip
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "pyperclip", "-q"])
-    import pyperclip
+install_deps()
 
-try:
-    import psutil
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "psutil", "-q"])
-    import psutil
+import websockets
+import pyautogui
+import pyperclip
+import psutil
 
 try:
     import pygetwindow as gw
 except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "pygetwindow", "-q"])
-    import pygetwindow as gw
-
-pyautogui.FAILSAFE = False
-pyautogui.PAUSE = 0.1
+    gw = None
 
 HOST = "127.0.0.1"
 PORT = 8765
 
-connected_clients = set()
+pyautogui.FAILSAFE = False
+pyautogui.PAUSE = 0.1
 
-AUTO_START_REG_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
-APP_NAME = "SmartGuideAI"
-APP_PATH = os.path.abspath(sys.argv[0])
-
-def add_to_autostart():
-    """Add program to Windows startup."""
-    try:
-        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, AUTO_START_REG_KEY, 0, winreg.KEY_SET_VALUE)
-        winreg.SetValueEx(key, APP_NAME, 0, winreg.REG_SZ, f'"{APP_PATH}"')
-        winreg.CloseKey(key)
-        return True
-    except:
-        return False
-
-def remove_from_autostart():
-    """Remove program from Windows startup."""
-    try:
-        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, AUTO_START_REG_KEY, 0, winreg.KEY_SET_VALUE)
-        winreg.DeleteValue(key, APP_NAME)
-        winreg.CloseKey(key)
-        return True
-    except:
-        return False
-
-async def handle_client(websocket, path):
-    connected_clients.add(websocket)
+async def handle_client(websocket):
+    logger.info("Client connected")
     try:
         async for message in websocket:
             try:
                 data = json.loads(message)
-                response = await process_command(data)
-                await websocket.send(json.dumps(response))
-            except json.JSONDecodeError:
-                await websocket.send(json.dumps({"error": "Invalid JSON"}))
+                result = await execute_command(data)
+                await websocket.send(json.dumps(result))
             except Exception as e:
+                logger.error(f"Command error: {e}")
                 await websocket.send(json.dumps({"error": str(e)}))
     except websockets.exceptions.ConnectionClosed:
-        pass
-    finally:
-        connected_clients.discard(websocket)
+        logger.info("Client disconnected")
 
-async def process_command(data):
-    cmd = data.get("type", "")
-    if cmd == "ping":
-        return {"type": "pong", "status": "ok"}
-    elif cmd == "click":
-        return handle_click(data)
-    elif cmd == "type":
-        return handle_type(data)
-    elif cmd == "press":
-        return handle_press(data)
-    elif cmd == "scroll":
-        return handle_scroll(data)
-    elif cmd == "hotkey":
-        return handle_hotkey(data)
-    elif cmd == "screenshot":
-        return handle_screenshot(data)
-    elif cmd == "get_screen_info":
-        return get_screen_info()
-    elif cmd == "get_active_window":
-        return get_active_window()
-    elif cmd == "list_windows":
-        return list_windows()
-    elif cmd == "focus_window":
-        return focus_window(data)
-    elif cmd == "open_app":
-        return open_app(data)
-    elif cmd == "close_app":
-        return close_app(data)
-    elif cmd == "get_system_info":
-        return get_system_info()
-    elif cmd == "get_clipboard":
-        return get_clipboard()
-    elif cmd == "set_clipboard":
-        return set_clipboard(data)
-    elif cmd == "move_mouse":
-        return move_mouse(data)
-    elif cmd == "drag":
-        return handle_drag(data)
-    elif cmd == "read_screen":
-        return read_screen(data)
-    elif cmd == "get_selected_text":
-        return get_selected_text()
-    else:
-        return {"error": f"Unknown command: {cmd}"}
-
-KEY_MAP = {
-    "enter": "enter", "return": "enter", "dabao": "enter",
-    "space": "space", "spacebar": "space",
-    "tab": "tab",
-    "escape": "escape", "esc": "escape",
-    "backspace": "backspace", "delete": "delete", "del": "delete",
-    "up": "up", "uparrow": "up",
-    "down": "down", "downarrow": "down",
-    "left": "left", "leftarrow": "left",
-    "right": "right", "rightarrow": "right",
-    "home": "home", "end": "end",
-    "pageup": "pageup", "pagedown": "pagedown",
-    "f1": "f1", "f2": "f2", "f3": "f3", "f4": "f4",
-    "f5": "f5", "f6": "f6", "f7": "f7", "f8": "f8",
-    "f9": "f9", "f10": "f10", "f11": "f11", "f12": "f12",
-    "capslock": "capslock", "numlock": "numlock",
-    "volumeup": "volumeup", "volumedown": "volumedown", "volumemute": "volumemute",
-    "playpause": "playpause", "mediaplaypause": "playpause",
-    "nexttrack": "nexttrack", "prevtrack": "prevtrack",
-}
-
-COPY_PASTE_MAP = {
-    "copy": ["ctrl", "c"], "paste": ["ctrl", "v"], "cut": ["ctrl", "x"],
-    "undo": ["ctrl", "z"], "redo": ["ctrl", "y"], "select all": ["ctrl", "a"],
-    "save": ["ctrl", "s"], "print": ["ctrl", "p"], "find": ["ctrl", "f"],
-    "replace": ["ctrl", "h"], "new tab": ["ctrl", "t"], "close tab": ["ctrl", "w"],
-    "new window": ["ctrl", "n"], "reopen tab": ["ctrl", "shift", "t"],
-    "fullscreen": ["f11"], "address bar": ["ctrl", "l"], "bookmark": ["ctrl", "d"],
-    "history": ["ctrl", "h"], "downloads": ["ctrl", "j"], "devtools": ["f12"],
-    "zoom in": ["ctrl", "="], "zoom out": ["ctrl", "-"], "zoom reset": ["ctrl", "0"],
-    "refresh": ["f5"], "reload": ["ctrl", "r"],
-    "back": ["alt", "left"], "forward": ["alt", "right"],
-    "next tab": ["ctrl", "tab"], "prev tab": ["ctrl", "shift", "tab"],
-}
-
-def handle_click(data):
+async def execute_command(cmd):
+    action = cmd.get("action", "")
+    
     try:
-        x, y = data.get("x"), data.get("y")
-        button = data.get("button", "left")
-        clicks = data.get("clicks", 1)
-        if x is not None and y is not None:
-            pyautogui.click(x, y, clicks=clicks, button=button)
-            return {"status": "success", "action": "click", "x": x, "y": y}
-        return {"error": "Missing coordinates"}
-    except Exception as e:
-        return {"error": str(e)}
-
-def handle_type(data):
-    try:
-        text = data.get("text", "")
-        interval = data.get("interval", 0.02)
-        if text.isascii():
-            pyautogui.typewrite(text, interval=interval)
-        else:
-            for char in text:
-                pyperclip.copy(char)
-                pyautogui.hotkey("ctrl", "v")
-                time.sleep(0.02)
-        return {"status": "success", "action": "type", "text": text[:50]}
-    except Exception as e:
-        return {"error": str(e)}
-
-def handle_press(data):
-    try:
-        key = data.get("key", "").lower().strip()
-        if key in COPY_PASTE_MAP:
-            pyautogui.hotkey(*COPY_PASTE_MAP[key])
-            return {"status": "success", "action": "hotkey", "keys": COPY_PASTE_MAP[key]}
-        if key in KEY_MAP:
-            pyautogui.press(KEY_MAP[key])
-            return {"status": "success", "action": "press", "key": KEY_MAP[key]}
-        pyautogui.press(key)
-        return {"status": "success", "action": "press", "key": key}
-    except Exception as e:
-        return {"error": str(e)}
-
-def handle_scroll(data):
-    try:
-        x, y = data.get("x"), data.get("y")
-        amount = data.get("amount", -3)
-        if x is not None and y is not None:
-            pyautogui.scroll(amount, x=x, y=y)
-        else:
+        if action == "click":
+            x, y = cmd.get("x", 0), cmd.get("y", 0)
+            pyautogui.click(x, y)
+            return {"status": "success", "action": "click"}
+        
+        elif action == "double_click":
+            x, y = cmd.get("x", 0), cmd.get("y", 0)
+            pyautogui.doubleClick(x, y)
+            return {"status": "success", "action": "double_click"}
+        
+        elif action == "right_click":
+            x, y = cmd.get("x", 0), cmd.get("y", 0)
+            pyautogui.rightClick(x, y)
+            return {"status": "success", "action": "right_click"}
+        
+        elif action == "move":
+            x, y = cmd.get("x", 0), cmd.get("y", 0)
+            pyautogui.moveTo(x, y)
+            return {"status": "success", "action": "move"}
+        
+        elif action == "drag":
+            x1, y1 = cmd.get("x1", 0), cmd.get("y1", 0)
+            x2, y2 = cmd.get("x2", 0), cmd.get("y2", 0)
+            pyautogui.moveTo(x1, y1)
+            pyautogui.drag(x2 - x1, y2 - y1, duration=0.5)
+            return {"status": "success", "action": "drag"}
+        
+        elif action == "scroll":
+            amount = cmd.get("amount", 0)
             pyautogui.scroll(amount)
-        return {"status": "success", "action": "scroll", "amount": amount}
-    except Exception as e:
-        return {"error": str(e)}
-
-def handle_hotkey(data):
-    try:
-        keys = data.get("keys", [])
-        if keys:
+            return {"status": "success", "action": "scroll"}
+        
+        elif action == "type":
+            text = cmd.get("text", "")
+            pyautogui.typewrite(text, interval=0.05)
+            return {"status": "success", "action": "type"}
+        
+        elif action == "press":
+            key = cmd.get("key", "")
+            pyautogui.press(key)
+            return {"status": "success", "action": "press"}
+        
+        elif action == "hotkey":
+            keys = cmd.get("keys", [])
             pyautogui.hotkey(*keys)
-            return {"status": "success", "action": "hotkey", "keys": keys}
-        return {"error": "No keys provided"}
+            return {"status": "success", "action": "hotkey"}
+        
+        elif action == "screenshot":
+            screenshot = pyautogui.screenshot()
+            import io
+            buffer = io.BytesIO()
+            screenshot.save(buffer, format="PNG")
+            import base64
+            img_str = base64.b64encode(buffer.getvalue()).decode()
+            return {"status": "success", "action": "screenshot", "image": img_str}
+        
+        elif action == "clipboard_read":
+            return {"status": "success", "action": "clipboard_read", "text": pyperclip.paste()}
+        
+        elif action == "clipboard_write":
+            text = cmd.get("text", "")
+            pyperclip.copy(text)
+            return {"status": "success", "action": "clipboard_write"}
+        
+        elif action == "open_app":
+            app = cmd.get("app", "")
+            os.startfile(app)
+            return {"status": "success", "action": "open_app"}
+        
+        elif action == "list_windows":
+            if gw:
+                windows = gw.getAllWindows()
+                return {"status": "success", "action": "list_windows", 
+                        "windows": [{"title": w.title, "id": w._hWnd} for w in windows if w.title]}
+            return {"status": "success", "action": "list_windows", "windows": []}
+        
+        elif action == "focus_window":
+            title = cmd.get("title", "")
+            if gw:
+                windows = gw.getWindowsWithTitle(title)
+                if windows:
+                    windows[0].activate()
+                    return {"status": "success", "action": "focus_window"}
+            return {"error": "Window not found"}
+        
+        elif action == "get_screen_size":
+            size = pyautogui.size()
+            return {"status": "success", "action": "get_screen_size", 
+                    "width": size.width, "height": size.height}
+        
+        elif action == "get_mouse_pos":
+            pos = pyautogui.position()
+            return {"status": "success", "action": "get_mouse_pos",
+                    "x": pos.x, "y": pos.y}
+        
+        elif action == "system_info":
+            import platform
+            return {"status": "success", "action": "system_info",
+                    "cpu": psutil.cpu_percent(),
+                    "memory": psutil.virtual_memory().percent,
+                    "platform": platform.system()}
+        
+        else:
+            return {"error": f"Unknown action: {action}"}
+    
     except Exception as e:
-        return {"error": str(e)}
-
-def handle_screenshot(data):
-    try:
-        region = data.get("region")
-        screenshot = pyautogui.screenshot(region=tuple(region) if region else None)
-        path = os.path.join(os.environ.get("TEMP", "."), "smartguide_screenshot.png")
-        screenshot.save(path)
-        return {"status": "success", "action": "screenshot", "path": path}
-    except Exception as e:
-        return {"error": str(e)}
-
-def get_screen_info():
-    try:
-        size = pyautogui.size()
-        return {"status": "success", "width": size.width, "height": size.height}
-    except Exception as e:
-        return {"error": str(e)}
-
-def get_active_window():
-    try:
-        window = gw.getActiveWindow()
-        if window:
-            return {"status": "success", "title": window.title, "left": window.left, "top": window.top, "width": window.width, "height": window.height}
-        return {"status": "success", "title": "Unknown"}
-    except Exception as e:
-        return {"error": str(e)}
-
-def list_windows():
-    try:
-        windows = [{"title": w.title, "left": w.left, "top": w.top, "width": w.width, "height": w.height} for w in gw.getAllWindows() if w.visible and w.title][:20]
-        return {"status": "success", "windows": windows}
-    except Exception as e:
-        return {"error": str(e)}
-
-def focus_window(data):
-    try:
-        title = data.get("title", "")
-        windows = gw.getWindowsWithTitle(title)
-        if windows:
-            windows[0].activate()
-            return {"status": "success", "action": "focus", "title": title}
-        return {"error": f"Window not found: {title}"}
-    except Exception as e:
-        return {"error": str(e)}
-
-def open_app(data):
-    try:
-        app = data.get("app", "")
-        os.system(f"start {app}")
-        return {"status": "success", "action": "open_app", "app": app}
-    except Exception as e:
-        return {"error": str(e)}
-
-def close_app(data):
-    try:
-        app = data.get("app", "")
-        os.system(f"taskkill /IM {app}.exe /F")
-        return {"status": "success", "action": "close_app", "app": app}
-    except Exception as e:
-        return {"error": str(e)}
-
-def get_system_info():
-    try:
-        battery = psutil.sensors_battery()
-        return {"status": "success", "cpu": psutil.cpu_percent(interval=0.1), "ram": psutil.virtual_memory().percent, "battery": battery.percent if battery else None, "disk": psutil.disk_usage('/').percent}
-    except Exception as e:
-        return {"error": str(e)}
-
-def get_clipboard():
-    try:
-        return {"status": "success", "text": pyperclip.paste()}
-    except Exception as e:
-        return {"error": str(e)}
-
-def set_clipboard(data):
-    try:
-        pyperclip.copy(data.get("text", ""))
-        return {"status": "success", "action": "set_clipboard"}
-    except Exception as e:
-        return {"error": str(e)}
-
-def move_mouse(data):
-    try:
-        x, y = data.get("x", 0), data.get("y", 0)
-        duration = data.get("duration", 0.2)
-        pyautogui.moveTo(x, y, duration=duration)
-        return {"status": "success", "action": "move_mouse", "x": x, "y": y}
-    except Exception as e:
-        return {"error": str(e)}
-
-def handle_drag(data):
-    try:
-        x1, y1, x2, y2 = data.get("x1", 0), data.get("y1", 0), data.get("x2", 0), data.get("y2", 0)
-        duration = data.get("duration", 0.5)
-        pyautogui.moveTo(x1, y1)
-        pyautogui.drag(x2 - x1, y2 - y1, duration=duration)
-        return {"status": "success", "action": "drag"}
-    except Exception as e:
-        return {"error": str(e)}
-
-def read_screen(data):
-    try:
-        try:
-            import easyocr
-            reader = easyocr.Reader(['en', 'hi'])
-            region = data.get("region")
-            screenshot = pyautogui.screenshot(region=tuple(region) if region else None)
-            import numpy as np
-            img_array = np.array(screenshot)
-            results = reader.readtext(img_array)
-            texts = [{"text": text, "confidence": round(conf * 100), "x": int(bbox[0][0]), "y": int(bbox[0][1])} for (bbox, text, conf) in results]
-            return {"status": "success", "action": "read_screen", "texts": texts}
-        except ImportError:
-            return {"status": "success", "action": "read_screen", "texts": [], "note": "Install easyocr: pip install easyocr"}
-    except Exception as e:
-        return {"error": str(e)}
-
-def get_selected_text():
-    try:
-        pyautogui.hotkey("ctrl", "c")
-        time.sleep(0.1)
-        text = pyperclip.paste()
-        return {"status": "success", "action": "get_selected_text", "text": text}
-    except Exception as e:
+        logger.error(f"Execution error: {e}")
         return {"error": str(e)}
 
 async def main():
-    add_to_autostart()
+    logger.info("=" * 50)
+    logger.info("SmartGuide AI - Silent Server Starting")
+    logger.info(f"Server: ws://{HOST}:{PORT}")
+    logger.info("=" * 50)
+    
     async with websockets.serve(handle_client, HOST, PORT):
+        logger.info("Server running. Waiting for connections...")
         await asyncio.Future()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except Exception as e:
+        logger.critical(f"Server crashed: {e}")
