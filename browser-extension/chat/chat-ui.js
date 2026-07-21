@@ -571,7 +571,7 @@ Say: "Press Ctrl+C" or "Press Enter" or "Press F11"
                     action.action === "go_back" || action.action === "go_forward" ||
                     action.action === "reload" || action.action === "list_tabs" ||
                     action.action === "execute_script" || action.action === "click_element" ||
-                    action.action === "type_text") {
+                    action.action === "type_text" || action.action === "click_at") {
                     
                     const result = await new Promise((resolve, reject) => {
                         chrome.runtime.sendMessage({
@@ -581,7 +581,9 @@ Say: "Press Ctrl+C" or "Press Enter" or "Press F11"
                             tabId: action.tabId,
                             script: action.script,
                             selector: action.selector,
-                            text: action.text
+                            text: action.text,
+                            x: action.x,
+                            y: action.y
                         }, (response) => {
                             if (chrome.runtime.lastError) {
                                 reject(new Error(chrome.runtime.lastError.message));

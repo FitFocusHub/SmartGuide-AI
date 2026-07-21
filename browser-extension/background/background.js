@@ -894,8 +894,8 @@ GO FORWARD:
 RELOAD PAGE:
 {"action": "reload"}
 
-EXECUTE JAVASCRIPT ON PAGE:
-{"action": "execute_script", "script": "document.title"}
+CLICK AT COORDINATES (x, y):
+{"action": "click_at", "x": 964, "y": 549}
 
 CLICK ELEMENT BY SELECTOR:
 {"action": "click_element", "selector": "button.submit"}
@@ -903,19 +903,21 @@ CLICK ELEMENT BY SELECTOR:
 TYPE TEXT IN INPUT:
 {"action": "type_text", "selector": "input[name='q']", "text": "hello"}
 
-When user says:
-- "open YouTube" -> navigate with youtube.com URL
-- "new tab" -> open_tab
-- "go to amazon" -> navigate with amazon.com URL
-- "reload page" -> reload
-- "go back" -> go_back
-- "go forward" -> go_forward
-- "close tab" -> close_tab
-- "click the search button" -> click_element with appropriate selector
-- "type in search box" -> type_text with selector and text
-- "get page title" -> execute_script with document.title
+EXECUTE JAVASCRIPT ON PAGE:
+{"action": "execute_script", "script": "document.title"}
 
-NEVER say you cannot open tabs or navigate. You CAN. Use the execute array.
+CRITICAL RULES:
+1. When you see an element position in context (like "Skip button at (964, 549)"), USE click_at with those coordinates
+2. ALWAYS use execute array to perform actions
+3. NEVER say "I cannot click" - you CAN click using click_at or click_element
+4. If you know the coordinates, use: {"action": "click_at", "x": <x>, "y": <y>}
+5. If you know the selector, use: {"action": "click_element", "selector": "<selector>"}
+
+Examples:
+- "Skip ad at (964, 549)" -> {"action": "click_at", "x": 964, "y": 549}
+- "Click Subscribe button" -> {"action": "click_element", "selector": "#subscribe-button"}
+- "Type in search" -> {"action": "type_text", "selector": "input[name='search_query']", "text": "hello"}
+- "Open YouTube" -> {"action": "navigate", "url": "https://youtube.com"}
 
 ========================
 OUTPUT FORMAT
@@ -1340,6 +1342,27 @@ async function handleBrowserAction(message, sendResponse) {
                         args: [selector, text]
                     }, (results) => {
                         sendResponse({ status: "success", action: "type_text", found: results[0]?.result });
+                    });
+                }
+            });
+            return true;
+        }
+        
+        if (action === "click_at") {
+            const x = message.x;
+            const y = message.y;
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                if (tabs[0]) {
+                    chrome.scripting.executeScript({
+                        target: { tabId: tabs[0].id },
+                        func: (clickX, clickY) => {
+                            const el = document.elementFromPoint(clickX, clickY);
+                            if (el) { el.click(); return el.tagName; }
+                            return null;
+                        },
+                        args: [x, y]
+                    }, (results) => {
+                        sendResponse({ status: "success", action: "click_at", element: results[0]?.result });
                     });
                 }
             });
