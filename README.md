@@ -1,19 +1,19 @@
-<p align="center">
-  <img src="https://img.shields.io/badge/SmartGuide-AI-v1.0-E94560?style=for-the-badge&logo=robot&logoColor=white" alt="SmartGuide AI"/>
-</p>
+# SmartGuide AI
 
-<h1 align="center">SmartGuide AI v1.0</h1>
-
-<p align="center">
-  <b>AI-Powered Browser Automation Assistant</b>
-</p>
+AI-Powered Browser Automation Assistant
 
 ---
 
-## Installation (4 Steps)
+## Download
+
+**[Download SmartGuide AI v1.0](https://github.com/FitFocusHub/SmartGuide-AI/releases/download/v1.0/SmartGuide-AI-v1.0.zip)** (1.52 MB)
+
+---
+
+## Installation
 
 ### Step 1: Download
-Download the ZIP file from this repository.
+Download the ZIP file from the link above.
 
 ### Step 2: Extract
 Extract the ZIP file to any folder.
@@ -28,7 +28,7 @@ Run `Server.exe` and follow the wizard.
 4. Click **Load unpacked**
 5. Select the `browser-extension` folder
 
-**Done!** Server starts automatically in background.
+**Done!** Server starts automatically.
 
 ---
 
@@ -45,16 +45,15 @@ Run `Server.exe` and follow the wizard.
 
 - AI-powered guidance
 - Automatic automation
-- Keyboard shortcuts
-- Website-specific help
+- Website-specific shortcuts
+- Silent background server
 
 ---
 
 ## Requirements
 
 - Windows 10/11
-- Python 3.8+ (auto-installed)
-- Chrome/Edge browser
+- Chrome or Edge browser
 - Free Groq API key
 
 ---
