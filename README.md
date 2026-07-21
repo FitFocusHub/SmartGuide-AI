@@ -6,14 +6,16 @@ AI-Powered Browser Automation Assistant
 
 ## Download
 
-**[Download SmartGuide AI v1.0](https://github.com/FitFocusHub/SmartGuide-AI/releases/download/v1.0/SmartGuide-AI-v1.0.zip)** (1.52 MB)
+### **[Click Here to Download SmartGuide AI v1.0](https://github.com/FitFocusHub/SmartGuide-AI/releases/download/v1.0/SmartGuide-AI-v1.0.zip)**
+
+**Size:** 1.52 MB | **File:** ZIP
 
 ---
 
-## Installation
+## Installation (4 Steps)
 
 ### Step 1: Download
-Download the ZIP file from the link above.
+Click the download button above.
 
 ### Step 2: Extract
 Extract the ZIP file to any folder.
